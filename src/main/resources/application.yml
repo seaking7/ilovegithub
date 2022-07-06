@@ -1,0 +1,33 @@
+spring:
+  profiles:
+    active: local
+  batch:
+    job:
+      names: ${job.name:NONE}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:mysql://13.125.191.160:3306/order
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: order-svc
+    password: order-pass
+  jpa:
+    show-sql: true
+    generate-ddl: false
+    hibernate:
+      ddl-auto : none
+  batch:
+    jdbc:
+      initialize-schema: ALWAYS
+
+#---
+#spring:
+#  config:
+#    activate:
+#      on-profile: test
+#  jpa:
+#    database: h2
