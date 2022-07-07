@@ -30,60 +30,62 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.List;
 
+import static java.lang.Thread.sleep;
+
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class HelloJobConfig {
+public class GithubUsersJobConfig {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
     private final GithubUserRepository githubUserRepository;
 
-    @Bean("hellJob")
-    public Job helloJob(Step helloStep) {
-        return jobBuilderFactory.get("helloJob")
+    @Bean("GithubUsersJob")
+    public Job githubUsersJob(Step githubUsersStep) {
+        return jobBuilderFactory.get("GithubUsersJob")
                 .incrementer(new RunIdIncrementer())
-                .start(helloStep)
+                .start(githubUsersStep)
                 .build();
     }
 
     @JobScope
-    @Bean("helloStep")
-    public Step helloStep(Tasklet tasklet) {
-        return stepBuilderFactory.get("helloStep")
-                .tasklet(tasklet)
+    @Bean("githubUsersStep")
+    public Step githubUsersStep(Tasklet githubUsersTasklet) {
+        return stepBuilderFactory.get("githubUsersStep")
+                .tasklet(githubUsersTasklet)
                 .build();
     }
 
     @StepScope
     @Bean
-    public Tasklet tasklet(@Value("#{jobParameters['startValue']}") String startValue,
-                           @Value("#{jobParameters['loopCount']}") String loopCount) {
+    public Tasklet githubUsersTasklet(@Value("#{jobParameters['startValue']}") String startValue,
+                                      @Value("#{jobParameters['loopCount']}") String loopCount,
+                                      @Value("#{jobParameters['gitToken']}") String gitToken) {
         return (contribution, chunkContext) -> {
-            System.out.println("Hello Spring Batch");
+            System.out.println("Start githubUsersTasklet Batch");
 
             int start = Integer.valueOf(startValue);
             int loop_cnt = Integer.valueOf(loopCount);
 
 
             for(int i = 1; i <= loop_cnt; i++){
-                readUserFromGithub(start, 100);
+                readUserFromGithub(start, 100, gitToken);
                 start += 100;
+                sleep(1300);
             }
 
             return RepeatStatus.FINISHED;
         };
     }
 
-    private void readUserFromGithub(int since, int per_page) {
-
+    private void readUserFromGithub(int since, int per_page, String gitToken) {
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "token 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");
+        headers.set("Authorization", "token "+ gitToken);
 
         HttpEntity request = new HttpEntity(headers);
-//adding the query params to the URL
         UriComponentsBuilder uriBuilder = UriComponentsBuilder
                 .fromUriString("https://api.github.com")
                 .path("/users")
@@ -117,8 +119,6 @@ public class HelloJobConfig {
                     .build();
             githubUserRepository.save(githubUser);
         }
-
-//        log.info(userSites.toString());
     }
 
     private void readUserFromGithub3(int since, int per_page) {
@@ -156,19 +156,5 @@ public class HelloJobConfig {
 //        log.info(userSites.toString());
     }
 
-    private void readUserFromGithub2(int since, int per_page) {
-        URI uri = UriComponentsBuilder
-                .fromUriString("https://api.github.com")
-                .path("/users")
-                .queryParam("since",since)
-                .queryParam("per_page",since)
-                .encode()
-                .build()
-                .toUri();
-        log.info("uri : {}",uri);
 
-        RestTemplate restTemplate = new RestTemplate();
-        String user = restTemplate.getForObject(uri, String.class);
-        log.info("user : {}", user);
-    }
 }
