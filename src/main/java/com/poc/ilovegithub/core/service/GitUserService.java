@@ -13,6 +13,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -44,7 +45,7 @@ public class GitUserService {
     }
 
     @Transactional
-    public void readUserFromGithub(int since, int per_page, String gitToken) {
+    public void readUserFromGithub(int since, int per_page, String gitToken) throws InterruptedException {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "token "+ gitToken);
@@ -59,17 +60,28 @@ public class GitUserService {
 
 
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(
-                uriBuilder.toUriString(),
-                HttpMethod.GET,
-                request,
-                String.class
-        );
 
-        log.info("StatusCode : {} {}", since, response.getStatusCode());
-        log.debug("Header : {}:", response.getHeaders());
-        log.debug("Body : {}", response.getBody());
+        try{
+            ResponseEntity<String> response = restTemplate.exchange(
+                    uriBuilder.toUriString(),
+                    HttpMethod.GET,
+                    request,
+                    String.class);
 
+            log.info("StatusCode : {} {}", since, response.getStatusCode());
+            log.debug("Header : {}:", response.getHeaders());
+            log.debug("Body : {}", response.getBody());
+
+            saveGitUser(response);
+        } catch ( HttpClientErrorException e) {
+            log.info("sleep 600s : {} {}", e.getStatusCode(), e.getMessage());
+            Thread.sleep(600000);
+
+        }
+
+    }
+
+    private void saveGitUser(ResponseEntity<String> response) {
         Gson gson = new Gson();
         Type collectionType = new TypeToken<List<GithubUsersDto>>(){}.getType();
         List<GithubUsersDto> githubUsersDtoList  = gson.fromJson( response.getBody() , collectionType);

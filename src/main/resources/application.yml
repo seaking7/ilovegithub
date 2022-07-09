@@ -15,9 +15,13 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: order-svc
     password: order-pass
+    hikari:
+      auto-commit: true
+
   jpa:
     show-sql: true
     generate-ddl: false
+
     hibernate:
       ddl-auto : none
   batch:

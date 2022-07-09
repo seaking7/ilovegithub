@@ -12,7 +12,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "G_gituser4")
+@Table(name = "G_gituser2")
 public class GithubUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
