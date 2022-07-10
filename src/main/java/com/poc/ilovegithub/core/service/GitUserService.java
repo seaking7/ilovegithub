@@ -97,4 +97,41 @@ public class GitUserService {
         }
         githubUserRepository.flush();
     }
+
+    public void getUserDetail(String login) throws InterruptedException {
+        HttpHeaders headers = new HttpHeaders();
+       // headers.set("Authorization", "token "+ gitToken);
+
+        HttpEntity request = new HttpEntity(headers);
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder
+                .fromUriString("https://api.github.com")
+                .path("/users")
+                .path("/")
+                .path(login)
+                .encode();
+
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        try{
+            ResponseEntity<String> response = restTemplate.exchange(
+                    uriBuilder.toUriString(),
+                    HttpMethod.GET,
+                    request,
+                    String.class);
+
+            log.info("StatusCode : {} {}", response.getStatusCode());
+            log.info("Header : {}:", response.getHeaders());
+            log.info("Body : {}", response.getBody());
+
+            Thread.sleep(1000);
+          //  saveGitUser(response);
+        } catch ( HttpClientErrorException e) {
+            log.info("sleep 600s : {} {}", e.getStatusCode(), e.getMessage());
+            Thread.sleep(600000);
+
+        }
+
+    }
+
 }
