@@ -11,10 +11,13 @@ spring:
     activate:
       on-profile: local
   datasource:
-    url: jdbc:mysql://13.125.191.160:3306/order
+    url: jdbc:mysql://3.39.251.35:3306/github
+#      url: jdbc:mysql://13.125.191.160:3306/order
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: order-svc
-    password: order-pass
+#    username: order-svc
+#      password: order-pass
+    username: taekyung
+    password: rlaxorud
     hikari:
       auto-commit: true
 

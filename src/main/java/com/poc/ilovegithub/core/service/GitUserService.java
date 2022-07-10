@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.poc.ilovegithub.core.domain.GithubUser;
 import com.poc.ilovegithub.core.repository.GithubUserRepository;
+import com.poc.ilovegithub.core.repository.UserDetailRepository;
 import com.poc.ilovegithub.dto.GithubUsersDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ import static java.lang.Thread.sleep;
 public class GitUserService {
 
     private final GithubUserRepository githubUserRepository;
+
 
     public void jobGitUser(String loopCount, String gitToken) throws InterruptedException {
 
@@ -98,40 +100,5 @@ public class GitUserService {
         githubUserRepository.flush();
     }
 
-    public void getUserDetail(String login) throws InterruptedException {
-        HttpHeaders headers = new HttpHeaders();
-       // headers.set("Authorization", "token "+ gitToken);
-
-        HttpEntity request = new HttpEntity(headers);
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder
-                .fromUriString("https://api.github.com")
-                .path("/users")
-                .path("/")
-                .path(login)
-                .encode();
-
-
-        RestTemplate restTemplate = new RestTemplate();
-
-        try{
-            ResponseEntity<String> response = restTemplate.exchange(
-                    uriBuilder.toUriString(),
-                    HttpMethod.GET,
-                    request,
-                    String.class);
-
-            log.info("StatusCode : {} {}", response.getStatusCode());
-            log.info("Header : {}:", response.getHeaders());
-            log.info("Body : {}", response.getBody());
-
-            Thread.sleep(1000);
-          //  saveGitUser(response);
-        } catch ( HttpClientErrorException e) {
-            log.info("sleep 600s : {} {}", e.getStatusCode(), e.getMessage());
-            Thread.sleep(600000);
-
-        }
-
-    }
 
 }
