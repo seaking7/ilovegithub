@@ -27,21 +27,20 @@ public class GitRepoInsertService {
 
     GitRepoRepository gitRepoRepository;
 
-    public UserDetail getUserRepository(UserDetail userDetail, String gitToken) throws InterruptedException {
+    public UserDetail gitRepoInsert(UserDetail userDetail, String gitToken) throws InterruptedException {
+
+        UriComponentsBuilder uriBuilder = makeUrlForGetRepo(userDetail);
+        UserDetail returnUserDetail = getUserRepoAndSave(userDetail, gitToken, uriBuilder);
+        log.info("UserDetail id : {} login: {}", returnUserDetail.getId(), returnUserDetail.getLogin());
+        return returnUserDetail;
+    }
+
+    private UserDetail getUserRepoAndSave(UserDetail userDetail, String gitToken, UriComponentsBuilder uriBuilder) throws InterruptedException {
+        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "token "+ gitToken);
 
         HttpEntity request = new HttpEntity(headers);
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder
-                .fromUriString("https://api.github.com")
-                .path("/users")
-                .path("/")
-                .path(userDetail.getLogin())
-                .path("/repos")
-                .encode();
-
-
-        RestTemplate restTemplate = new RestTemplate();
         UserDetail returnUserDetail  = userDetail;
 
         try{
@@ -53,9 +52,8 @@ public class GitRepoInsertService {
 
             log.debug("StatusCode : {} {}", response.getStatusCode());
             log.debug("Header : {}:", response.getHeaders());
-//            log.info("Message {}", response.getBody());
-            //Thread.sleep(1000);
-           saveGitRepo(response, userDetail.getLogin());
+
+            saveGitRepo(response, userDetail.getLogin());
             returnUserDetail.setStatus(UserStatus.REPO_INSERTED);
 
         } catch ( HttpClientErrorException e) {
@@ -63,14 +61,21 @@ public class GitRepoInsertService {
             if(e.getStatusCode().equals(HttpStatus.NOT_FOUND)){
                 returnUserDetail.setStatus(UserStatus.NOT_FOUND);
             } else{
-                Thread.sleep(600000);
+                Thread.sleep(600000);  //403 API rate limit exceeded. 10분 sleep
             }
-
         }
-        log.info("UserDetail id : {} login: {}", returnUserDetail.getId(), returnUserDetail.getLogin());
         return returnUserDetail;
     }
 
+    private UriComponentsBuilder makeUrlForGetRepo(UserDetail userDetail) {
+        return UriComponentsBuilder
+                .fromUriString("https://api.github.com")
+                .path("/users")
+                .path("/")
+                .path(userDetail.getLogin())
+                .path("/repos")
+                .encode();
+    }
 
     private void saveGitRepo(ResponseEntity<String> response, String login) {
         Gson gson = new Gson();
@@ -80,7 +85,7 @@ public class GitRepoInsertService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
         for (GitRepoDto gitRepo : gitRepoList) {
-            log.info(gitRepo.toString());
+            log.debug(gitRepo.toString());
 
             GitRepo gitRepository = GitRepo.builder()
                     .login(login)

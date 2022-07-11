@@ -1,11 +1,6 @@
 package com.poc.ilovegithub.job;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.poc.ilovegithub.core.domain.GithubUser;
-import com.poc.ilovegithub.core.repository.GithubUserRepository;
 import com.poc.ilovegithub.core.service.GitUserService;
-import com.poc.ilovegithub.dto.GithubUsersDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -55,7 +50,7 @@ public class GithubUsersJobConfig {
                                       @Value("#{jobParameters['gitToken']}") String gitToken) {
         return (contribution, chunkContext) -> {
 
-            gitUserService.jobGitUser(loopCount, gitToken);
+            gitUserService.insertUserListFromGithubForLoop(loopCount, gitToken);
 
             return RepeatStatus.FINISHED;
         };

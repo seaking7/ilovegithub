@@ -5,7 +5,6 @@ import com.poc.ilovegithub.core.domain.UserDetail;
 import com.poc.ilovegithub.core.domain.UserStatus;
 import com.poc.ilovegithub.core.repository.UserDetailRepository;
 import com.poc.ilovegithub.core.service.GitRepoInsertService;
-import com.poc.ilovegithub.core.service.UserDetailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -53,7 +52,7 @@ public class GitRepoInsertJobConfig {
                                      ItemProcessor gitRepoInsertProcessor,
                                      ItemWriter gitRepoInsertWriter) {
         return stepBuilderFactory.get("gitRepoInsertStep")
-                .<UserDetail, UserDetail>chunk(5)
+                .<UserDetail, UserDetail>chunk(500)
                 .reader(gitRepoInsertReader)
                 .processor(gitRepoInsertProcessor)
                 .writer(gitRepoInsertWriter)
@@ -67,7 +66,7 @@ public class GitRepoInsertJobConfig {
                 .name("gitRepoInsertReader")
                 .repository(userDetailRepository)
                 .methodName("findByStatusEquals")
-                .pageSize(5)
+                .pageSize(500)
                 .arguments(UserStatus.DETAIL_UPDATED)
                 .sorts(Collections.singletonMap("id", Sort.Direction.ASC))
                 .build();
@@ -79,7 +78,7 @@ public class GitRepoInsertJobConfig {
         return new ItemProcessor<UserDetail, UserDetail>() {
             @Override
             public UserDetail process(UserDetail item) throws Exception {
-                UserDetail userDetail = gitRepoInsertService.getUserRepository(item, gitToken);
+                UserDetail userDetail = gitRepoInsertService.gitRepoInsert(item, gitToken);
                 return userDetail;
             }
         };

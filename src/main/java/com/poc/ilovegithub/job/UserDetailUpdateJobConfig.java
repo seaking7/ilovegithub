@@ -25,7 +25,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Sort;
 
 import java.util.Collections;
-import java.util.List;
 
 @Slf4j
 @Configuration
@@ -52,7 +51,7 @@ public class UserDetailUpdateJobConfig {
                                      ItemProcessor userDetailProcessor,
                                      ItemWriter userDetailWriter) {
         return stepBuilderFactory.get("githubUserInsertStep")
-                .<UserDetail, UserDetail>chunk(5)
+                .<UserDetail, UserDetail>chunk(500)
                 .reader(userDetailReader)
                 .processor(userDetailProcessor)
                 .writer(userDetailWriter)
@@ -66,7 +65,7 @@ public class UserDetailUpdateJobConfig {
                 .name("userDetailReader")
                 .repository(userDetailRepository)
                 .methodName("findByStatusEquals")
-                .pageSize(5)
+                .pageSize(500)
                 .arguments(UserStatus.INIT)
                 .sorts(Collections.singletonMap("id", Sort.Direction.ASC))
                 .build();
@@ -78,7 +77,7 @@ public class UserDetailUpdateJobConfig {
         return new ItemProcessor<UserDetail, UserDetail>() {
             @Override
             public UserDetail process(UserDetail item) throws Exception {
-                UserDetail userDetail = userDetailService.getUserDetail(item, gitToken);
+                UserDetail userDetail = userDetailService.updateUserDetailInfo(item, gitToken);
                 return userDetail;
             }
         };
