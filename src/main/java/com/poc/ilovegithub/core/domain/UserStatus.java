@@ -1,5 +1,5 @@
 package com.poc.ilovegithub.core.domain;
 
 public enum UserStatus {
-    INIT, UPDATE, COMPLETE, NOT_FOUND
+    INIT, DETAIL_UPDATED, REPO_INSERTED, COMPLETE, NOT_FOUND
 }

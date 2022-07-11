@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 @DynamicUpdate
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "G_user")
-public class UserDetail {
+@Table(name = "G_repository")
+public class GitRepo {
 
     @Id
     private Integer id;
@@ -23,24 +23,19 @@ public class UserDetail {
     private String login;
 
     @Column(nullable = false)
-    private String type;
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    private UserStatus status;
+    private Integer size;
+    private Integer stargazers_count;
 
-    private String company;
-    private String blog;
-    private String location;
-    private String email;
-    private String bio;
-    private Integer public_repos;
-    private Integer public_gists;
-    private Integer followers;
-    private Integer following;
+    private String language;
+
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
+    private LocalDateTime pushed_at;
     private LocalDateTime fetched_on;
+
+
 
 
 }

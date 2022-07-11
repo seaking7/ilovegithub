@@ -11,11 +11,31 @@ spring:
     activate:
       on-profile: local
   datasource:
-    url: jdbc:mysql://3.39.251.35:3306/github
-#      url: jdbc:mysql://13.125.191.160:3306/order
+    url: jdbc:mysql://13.125.191.160:3306/order
     driver-class-name: com.mysql.cj.jdbc.Driver
-#    username: order-svc
-#      password: order-pass
+    username: order-svc
+    password: order-pass
+    hikari:
+      auto-commit: true
+
+  jpa:
+    show-sql: true
+    generate-ddl: false
+
+    hibernate:
+      ddl-auto : none
+  batch:
+    jdbc:
+      initialize-schema: ALWAYS
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:mysql://3.39.251.35:3306/github
+    driver-class-name: com.mysql.cj.jdbc.Driver
     username: taekyung
     password: rlaxorud
     hikari:
@@ -30,6 +50,7 @@ spring:
   batch:
     jdbc:
       initialize-schema: ALWAYS
+
 
 #---
 #spring:

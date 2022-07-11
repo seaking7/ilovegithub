@@ -15,6 +15,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -48,12 +50,12 @@ public class UserDetailService {
 
             //Thread.sleep(1000);
             returnUserDetail = response.getBody();
-            returnUserDetail.setStatus(UserStatus.UPDATE);
+            returnUserDetail.setStatus(UserStatus.DETAIL_UPDATED);
+            returnUserDetail.setFetched_on(LocalDateTime.now());
         } catch ( HttpClientErrorException e) {
             log.info("Exception  : {} {} {}", userDetail.getLogin(), e.getStatusCode(), e.getMessage());
-
+            returnUserDetail = userDetail;
             if(e.getStatusCode().equals(HttpStatus.NOT_FOUND)){
-                returnUserDetail = userDetail;
                 returnUserDetail.setStatus(UserStatus.NOT_FOUND);
             } else{
                 Thread.sleep(600000);
