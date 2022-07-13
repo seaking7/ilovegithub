@@ -38,6 +38,8 @@ public class GitRepoInsertService {
     private UserDetail getUserRepoAndSave(UserDetail userDetail, String gitToken, UriComponentsBuilder uriBuilder) throws InterruptedException {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
+        headers.set("User-Agent", "iLoveGit-seaking7114-App");
+        headers.set("Accept", "application/vnd.github+json");
         headers.set("Authorization", "token "+ gitToken);
 
         HttpEntity request = new HttpEntity(headers);
@@ -61,8 +63,11 @@ public class GitRepoInsertService {
             if(e.getStatusCode().equals(HttpStatus.NOT_FOUND)){
                 returnUserDetail.setStatus(UserStatus.NOT_FOUND);
             } else{
-                Thread.sleep(600000);  //403 API rate limit exceeded. 10분 sleep
+                Thread.sleep(1200000);  //403 API rate limit exceeded. 20분 sleep
             }
+        } catch( Exception e ){
+            log.info("Exception  : {} {} {}", userDetail.getLogin(), e.getCause(), e.getMessage());
+            Thread.sleep(600000);
         }
         return returnUserDetail;
     }

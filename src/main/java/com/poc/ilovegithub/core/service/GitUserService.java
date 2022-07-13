@@ -63,6 +63,8 @@ public class GitUserService {
     private void getUserListAndSave(int since, String gitToken, UriComponentsBuilder uriBuilder) throws InterruptedException {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
+        headers.set("User-Agent", "iLoveGithub-seaking7-App");
+        headers.set("Accept", "application/vnd.github+json");
         headers.set("Authorization", "token "+ gitToken);
 
         HttpEntity request = new HttpEntity(headers);

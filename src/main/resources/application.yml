@@ -28,6 +28,7 @@ spring:
     jdbc:
       initialize-schema: ALWAYS
 
+
 ---
 spring:
   config:
