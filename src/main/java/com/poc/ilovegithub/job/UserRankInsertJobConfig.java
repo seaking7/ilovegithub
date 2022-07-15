@@ -4,7 +4,8 @@ import com.poc.ilovegithub.core.domain.GithubUser;
 import com.poc.ilovegithub.core.domain.UserDetail;
 import com.poc.ilovegithub.core.domain.UserStatus;
 import com.poc.ilovegithub.core.repository.UserDetailRepository;
-import com.poc.ilovegithub.core.service.UserDetailService;
+import com.poc.ilovegithub.core.service.GitRepoInsertService;
+import com.poc.ilovegithub.core.service.UserRankInsertService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -30,56 +31,58 @@ import java.util.Collections;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class UserDetailUpdateJobConfig {
-
+public class UserRankInsertJobConfig {
     private final Environment env;
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
-    private final UserDetailService userDetailService;
+    private final GitRepoInsertService gitRepoInsertService;
+
+    private final UserRankInsertService userRankInsertService;
     private final UserDetailRepository userDetailRepository;
 
-    @Bean("UserDetailUpdateJob")
-    public Job userDetailUpdateJob(Step userDetailUpdateStep) {
-        return jobBuilderFactory.get("UserDetailUpdateJob")
+
+    @Bean("UserRankInsertJob")
+    public Job gitRepoInsertJob(Step userRankInsertStep) {
+        return jobBuilderFactory.get("UserRankInsertJob")
                 .incrementer(new RunIdIncrementer())
-                .start(userDetailUpdateStep)
+                .start(userRankInsertStep)
                 .build();
     }
 
     @JobScope
-    @Bean("userDetailUpdateStep")
-    public Step userDetailUpdateStep(ItemReader userDetailReader,
-                                     ItemProcessor userDetailProcessor,
-                                     ItemWriter userDetailWriter) {
-        return stepBuilderFactory.get("githubUserInsertStep")
+    @Bean("userRankInsertStep")
+    public Step userRankInsertStep(ItemReader userRankInsertReader,
+                                     ItemProcessor userRankInsertProcessor,
+                                     ItemWriter userRankInsertWriter) {
+        return stepBuilderFactory.get("userRankInsertStep")
                 .<UserDetail, UserDetail>chunk(Integer.parseInt(env.getProperty("my.fetch-count")))
-                .reader(userDetailReader)
-                .processor(userDetailProcessor)
-                .writer(userDetailWriter)
+                .reader(userRankInsertReader)
+                .processor(userRankInsertProcessor)
+                .writer(userRankInsertWriter)
                 .build();
     }
 
     @StepScope
     @Bean
-    public RepositoryItemReader<GithubUser> userDetailReader() {
+    public RepositoryItemReader<GithubUser> userRankInsertReader() {
         return new RepositoryItemReaderBuilder<GithubUser>()
-                .name("userDetailReader")
+                .name("userRankInsertReader")
                 .repository(userDetailRepository)
                 .methodName("findByStatusEquals")
                 .pageSize(Integer.parseInt(env.getProperty("my.fetch-count")))
-                .arguments(UserStatus.INIT)
+                .arguments(UserStatus.REPO_INSERTED)
                 .sorts(Collections.singletonMap("id", Sort.Direction.ASC))
                 .build();
     }
 
     @StepScope
     @Bean
-    public ItemProcessor<UserDetail, UserDetail> userDetailProcessor(@Value("#{jobParameters['gitToken']}") String gitToken) {
+    public ItemProcessor<UserDetail, UserDetail> userRankInsertProcessor(@Value("#{jobParameters['gitToken']}") String gitToken) {
         return new ItemProcessor<UserDetail, UserDetail>() {
             @Override
             public UserDetail process(UserDetail item) throws Exception {
-                UserDetail userDetail = userDetailService.updateUserDetailInfo(item, gitToken);
+                UserDetail userDetail = userRankInsertService.userRankInsert(item, gitToken);
                 return userDetail;
             }
         };
@@ -87,7 +90,7 @@ public class UserDetailUpdateJobConfig {
 
     @StepScope
     @Bean
-    public ItemWriter<UserDetail> userDetailWriter() {
+    public ItemWriter<UserDetail> userRankInsertWriter() {
         return items -> {
            items.forEach(item -> userDetailRepository.save(item));
         };

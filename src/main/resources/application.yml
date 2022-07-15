@@ -5,6 +5,8 @@ spring:
     job:
       names: ${job.name:NONE}
 
+my:
+  fetch-count: 50
 ---
 spring:
   config:

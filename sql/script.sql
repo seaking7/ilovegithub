@@ -59,6 +59,7 @@ CREATE TABLE `g_user` (
   PRIMARY KEY (`id`)NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+alter table g_user add is_korean boolean default false;
 
 CREATE TABLE `g_repository` (
   `id` int NOT NULL,
@@ -74,3 +75,16 @@ CREATE TABLE `g_repository` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+CREATE TABLE `g_user_rank` (
+`id` int NOT NULL,
+`login` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+`followers` int DEFAULT NULL,
+`following` int DEFAULT NULL,
+`size` int DEFAULT NULL,
+`stargazers_count` int DEFAULT NULL,
+`main_language` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+is_korean boolean default false,
+`created_at` datetime(6) DEFAULT NULL,
+`updated_at` datetime(6) DEFAULT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

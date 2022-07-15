@@ -22,6 +22,7 @@ import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Sort;
 
 import java.util.Collections;
@@ -30,7 +31,7 @@ import java.util.Collections;
 @Configuration
 @RequiredArgsConstructor
 public class GitRepoInsertJobConfig {
-
+    private final Environment env;
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
@@ -52,7 +53,7 @@ public class GitRepoInsertJobConfig {
                                      ItemProcessor gitRepoInsertProcessor,
                                      ItemWriter gitRepoInsertWriter) {
         return stepBuilderFactory.get("gitRepoInsertStep")
-                .<UserDetail, UserDetail>chunk(500)
+                .<UserDetail, UserDetail>chunk(Integer.parseInt(env.getProperty("my.fetch-count")))
                 .reader(gitRepoInsertReader)
                 .processor(gitRepoInsertProcessor)
                 .writer(gitRepoInsertWriter)
@@ -66,7 +67,7 @@ public class GitRepoInsertJobConfig {
                 .name("gitRepoInsertReader")
                 .repository(userDetailRepository)
                 .methodName("findByStatusEquals")
-                .pageSize(500)
+                .pageSize(Integer.parseInt(env.getProperty("my.fetch-count")))
                 .arguments(UserStatus.DETAIL_UPDATED)
                 .sorts(Collections.singletonMap("id", Sort.Direction.ASC))
                 .build();
