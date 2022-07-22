@@ -1,12 +1,12 @@
 spring:
   profiles:
     active: local
+    include: auth
   batch:
     job:
       names: ${job.name:NONE}
 
-my:
-  fetch-count: 50
+
 ---
 spring:
   config:
@@ -21,7 +21,7 @@ spring:
       auto-commit: true
 
   jpa:
-    show-sql: true
+    show-sql: false
     generate-ddl: false
 
     hibernate:

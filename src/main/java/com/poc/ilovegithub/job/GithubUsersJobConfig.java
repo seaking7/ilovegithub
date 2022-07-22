@@ -46,11 +46,10 @@ public class GithubUsersJobConfig {
 
     @StepScope
     @Bean
-    public Tasklet githubUsersTasklet(@Value("#{jobParameters['loopCount']}") String loopCount,
-                                      @Value("#{jobParameters['gitToken']}") String gitToken) {
+    public Tasklet githubUsersTasklet(@Value("#{jobParameters['loopCount']}") String loopCount) {
         return (contribution, chunkContext) -> {
 
-            gitUserService.insertUserListFromGithubForLoop(loopCount, gitToken);
+            gitUserService.insertUserListFromGithubForLoop(loopCount);
 
             return RepeatStatus.FINISHED;
         };

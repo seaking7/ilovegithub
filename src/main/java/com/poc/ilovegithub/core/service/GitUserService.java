@@ -7,6 +7,7 @@ import com.poc.ilovegithub.core.repository.GithubUserRepository;
 import com.poc.ilovegithub.dto.GithubUsersDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -26,12 +27,12 @@ import static java.lang.Thread.sleep;
 @Service
 @AllArgsConstructor
 public class GitUserService {
-
+    private final Environment env;
     public final static int READ_PER_PAGE = 100;
     private final GithubUserRepository githubUserRepository;
 
 
-    public void insertUserListFromGithubForLoop(String loopCount, String gitToken) throws InterruptedException {
+    public void insertUserListFromGithubForLoop(String loopCount) throws InterruptedException {
 
         String currentMaxGithubId = githubUserRepository.findMaxGitId();
         log.info("Start githubUsersTasklet Batch start from {}", currentMaxGithubId);
@@ -40,15 +41,15 @@ public class GitUserService {
         int loop_cnt = Integer.valueOf(loopCount);
 
         for(int i = 1; i <= loop_cnt; i++){
-            insertUserListFromGithub(start, READ_PER_PAGE, gitToken);
+            insertUserListFromGithub(start, READ_PER_PAGE);
             start += READ_PER_PAGE;
         }
     }
 
     @Transactional
-    public void insertUserListFromGithub(int since, int per_page, String gitToken) throws InterruptedException {
+    public void insertUserListFromGithub(int since, int per_page) throws InterruptedException {
         UriComponentsBuilder uriBuilder = makeUrlForGetUser(since, per_page);
-        getUserListAndSave(since, gitToken, uriBuilder);
+        getUserListAndSave(since, uriBuilder);
     }
 
     private UriComponentsBuilder makeUrlForGetUser(int since, int per_page) {
@@ -60,12 +61,13 @@ public class GitUserService {
                 .encode();
     }
 
-    private void getUserListAndSave(int since, String gitToken, UriComponentsBuilder uriBuilder) throws InterruptedException {
+    private void getUserListAndSave(int since, UriComponentsBuilder uriBuilder) throws InterruptedException {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.set("User-Agent", "iLoveGithub-seaking7-App");
+        String agentName = env.getProperty("my.git-appName") + "-" + env.getProperty("my.git-login") + "-App";
+        headers.set("User-Agent", agentName);
         headers.set("Accept", "application/vnd.github+json");
-        headers.set("Authorization", "token "+ gitToken);
+        headers.set("Authorization", "token "+ env.getProperty("my.git-token"));
 
         HttpEntity request = new HttpEntity(headers);
         try{

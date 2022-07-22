@@ -75,11 +75,11 @@ public class GitRepoInsertJobConfig {
 
     @StepScope
     @Bean
-    public ItemProcessor<UserDetail, UserDetail> gitRepoInsertProcessor(@Value("#{jobParameters['gitToken']}") String gitToken) {
+    public ItemProcessor<UserDetail, UserDetail> gitRepoInsertProcessor() {
         return new ItemProcessor<UserDetail, UserDetail>() {
             @Override
             public UserDetail process(UserDetail item) throws Exception {
-                UserDetail userDetail = gitRepoInsertService.gitRepoInsert(item, gitToken);
+                UserDetail userDetail = gitRepoInsertService.gitRepoInsert(item);
                 return userDetail;
             }
         };

@@ -66,20 +66,20 @@ public class UserDetailUpdateJobConfig {
         return new RepositoryItemReaderBuilder<GithubUser>()
                 .name("userDetailReader")
                 .repository(userDetailRepository)
-                .methodName("findByStatusEquals")
+                .methodName("findByStatusEqualsAndIdGreaterThanAndIdLessThan")
                 .pageSize(Integer.parseInt(env.getProperty("my.fetch-count")))
-                .arguments(UserStatus.INIT)
+                .arguments(UserStatus.INIT, Integer.parseInt(env.getProperty("my.start-from-id")), Integer.parseInt(env.getProperty("my.end_to_id")))
                 .sorts(Collections.singletonMap("id", Sort.Direction.ASC))
                 .build();
     }
 
     @StepScope
     @Bean
-    public ItemProcessor<UserDetail, UserDetail> userDetailProcessor(@Value("#{jobParameters['gitToken']}") String gitToken) {
+    public ItemProcessor<UserDetail, UserDetail> userDetailProcessor() {
         return new ItemProcessor<UserDetail, UserDetail>() {
             @Override
             public UserDetail process(UserDetail item) throws Exception {
-                UserDetail userDetail = userDetailService.updateUserDetailInfo(item, gitToken);
+                UserDetail userDetail = userDetailService.updateUserDetailInfo(item);
                 return userDetail;
             }
         };

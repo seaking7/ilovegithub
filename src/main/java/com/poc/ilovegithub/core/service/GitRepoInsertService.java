@@ -9,6 +9,7 @@ import com.poc.ilovegithub.core.repository.GitRepoRepository;
 import com.poc.ilovegithub.dto.GitRepoDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -25,22 +26,24 @@ import java.util.List;
 @AllArgsConstructor
 public class GitRepoInsertService {
 
+    private final Environment env;
     GitRepoRepository gitRepoRepository;
 
-    public UserDetail gitRepoInsert(UserDetail userDetail, String gitToken) throws InterruptedException {
+    public UserDetail gitRepoInsert(UserDetail userDetail) throws InterruptedException {
 
         UriComponentsBuilder uriBuilder = makeUrlForGetRepo(userDetail);
-        UserDetail returnUserDetail = getUserRepoAndSave(userDetail, gitToken, uriBuilder);
+        UserDetail returnUserDetail = getUserRepoAndSave(userDetail, uriBuilder);
         log.info("UserDetail id : {} login: {}", returnUserDetail.getId(), returnUserDetail.getLogin());
         return returnUserDetail;
     }
 
-    private UserDetail getUserRepoAndSave(UserDetail userDetail, String gitToken, UriComponentsBuilder uriBuilder) throws InterruptedException {
+    private UserDetail getUserRepoAndSave(UserDetail userDetail, UriComponentsBuilder uriBuilder) throws InterruptedException {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.set("User-Agent", "iLoveGit-seaking7114-App");
+        String agentName = env.getProperty("my.git-appName") + "-" + env.getProperty("my.git-login") + "-App";
+        headers.set("User-Agent", agentName);
         headers.set("Accept", "application/vnd.github+json");
-        headers.set("Authorization", "token "+ gitToken);
+        headers.set("Authorization", "token "+ env.getProperty("my.git-token"));
 
         HttpEntity request = new HttpEntity(headers);
         UserDetail returnUserDetail  = userDetail;

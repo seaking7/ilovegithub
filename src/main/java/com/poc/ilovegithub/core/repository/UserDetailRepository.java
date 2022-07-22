@@ -12,4 +12,6 @@ public interface UserDetailRepository extends JpaRepository<UserDetail, Integer>
 
     Page<UserDetail> findByStatusEquals(UserStatus userStatus, Pageable pageable);
 
+    Page<UserDetail> findByStatusEqualsAndIdGreaterThanAndIdLessThan(UserStatus userStatus, Integer from, Integer to, Pageable pageable);
+
 }

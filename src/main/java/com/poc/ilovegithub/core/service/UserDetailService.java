@@ -4,6 +4,7 @@ import com.poc.ilovegithub.core.domain.UserDetail;
 import com.poc.ilovegithub.core.domain.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -16,23 +17,25 @@ import java.time.LocalDateTime;
 @Service
 @AllArgsConstructor
 public class UserDetailService {
+    private final Environment env;
 
-    public UserDetail updateUserDetailInfo(UserDetail userDetail, String gitToken) throws InterruptedException {
+    public UserDetail updateUserDetailInfo(UserDetail userDetail) throws InterruptedException {
 
         UriComponentsBuilder uriBuilder = makeUrlForGetUserDetail(userDetail);
-        UserDetail returnUserDetail = getUserDetail(userDetail, gitToken, uriBuilder);
+        UserDetail returnUserDetail = getUserDetail(userDetail, uriBuilder);
         log.info("UserDetail id : {} login: {}", returnUserDetail.getId(), returnUserDetail.getLogin());
         return returnUserDetail;
     }
 
-    private UserDetail getUserDetail(UserDetail userDetail, String gitToken, UriComponentsBuilder uriBuilder) throws InterruptedException {
+    private UserDetail getUserDetail(UserDetail userDetail, UriComponentsBuilder uriBuilder) throws InterruptedException {
         UserDetail returnUserDetail;
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.set("User-Agent", "iLoveGithub-seaking7-App");
+        String agentName = env.getProperty("my.git-appName") + "-" + env.getProperty("my.git-login") + "-App";
+        headers.set("User-Agent", agentName);
         headers.set("Accept", "application/vnd.github+json");
-        headers.set("Authorization", "token "+ gitToken);
+        headers.set("Authorization", "token "+ env.getProperty("my.git-token"));
 
         HttpEntity request = new HttpEntity(headers);
         try{
