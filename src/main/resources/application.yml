@@ -6,6 +6,8 @@ spring:
     job:
       names: ${job.name:NONE}
 
+server:
+  port: 8085
 
 ---
 spring:

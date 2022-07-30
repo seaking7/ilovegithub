@@ -58,7 +58,7 @@ public class GitRepoInsertService {
             log.debug("StatusCode : {} {}", response.getStatusCode());
             log.debug("Header : {}:", response.getHeaders());
 
-            saveGitRepo(response, userDetail.getLogin());
+            saveGitRepo(response, userDetail.getLogin(), userDetail.getId());
             returnUserDetail.setStatus(UserStatus.REPO_INSERTED);
 
         } catch ( HttpClientErrorException e) {
@@ -85,7 +85,7 @@ public class GitRepoInsertService {
                 .encode();
     }
 
-    private void saveGitRepo(ResponseEntity<String> response, String login) {
+    private void saveGitRepo(ResponseEntity<String> response, String login, Integer userId) {
         Gson gson = new Gson();
         Type collectionType = new TypeToken<List<GitRepoDto>>(){}.getType();
         List<GitRepoDto> gitRepoList  = gson.fromJson( response.getBody() , collectionType);
@@ -98,6 +98,7 @@ public class GitRepoInsertService {
             GitRepo gitRepository = GitRepo.builder()
                     .login(login)
                     .id(gitRepo.getId())
+                    .userId(userId)
                     .name(gitRepo.getName())
                     .size(gitRepo.getSize())
                     .stargazers_count(gitRepo.getStargazers_count())

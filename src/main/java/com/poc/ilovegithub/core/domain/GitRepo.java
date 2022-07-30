@@ -25,6 +25,8 @@ public class GitRepo {
     @Column(nullable = false)
     private String name;
 
+    private Integer userId;
+
     private Integer size;
     private Integer stargazers_count;
 

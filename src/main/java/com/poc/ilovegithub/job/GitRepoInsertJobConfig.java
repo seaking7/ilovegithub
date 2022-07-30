@@ -19,7 +19,6 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.data.RepositoryItemReader;
 import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -66,9 +65,9 @@ public class GitRepoInsertJobConfig {
         return new RepositoryItemReaderBuilder<GithubUser>()
                 .name("gitRepoInsertReader")
                 .repository(userDetailRepository)
-                .methodName("findByStatusEquals")
+                .methodName("findByStatusEqualsAndIdGreaterThanAndIdLessThan")
                 .pageSize(Integer.parseInt(env.getProperty("my.fetch-count")))
-                .arguments(UserStatus.DETAIL_UPDATED)
+                .arguments(UserStatus.DETAIL_UPDATED, Integer.parseInt(env.getProperty("my.start-from-id")), Integer.parseInt(env.getProperty("my.end_to_id")))
                 .sorts(Collections.singletonMap("id", Sort.Direction.ASC))
                 .build();
     }

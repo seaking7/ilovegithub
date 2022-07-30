@@ -36,9 +36,13 @@
   	partition p8 values less than (9000000),
   	partition p9 values less than (10000000),
   	partition p10 values less than MAXVALUE);
-  
-  
-CREATE TABLE `g_user` (
+
+
+   alter table g_user add partition ( partition p20 VALUES LESS THAN (20000000));
+   alter table g_user add partition ( partition p99 VALUES LESS THAN MAXVALUE);
+   alter table g_user drop  PARTITION p10;
+
+   CREATE TABLE `g_user` (
   `id` int NOT NULL,
   `login` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` varchar(200) DEFAULT 'INIT',
@@ -74,17 +78,37 @@ CREATE TABLE `g_repository` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+create index g_repository_idx1 on g_repository(login);
+
+alter table g_repository add user_id int  DEFAULT null after login;
+
 
 CREATE TABLE `g_user_rank` (
-`id` int NOT NULL,
-`login` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-`followers` int DEFAULT NULL,
-`following` int DEFAULT NULL,
-`size` int DEFAULT NULL,
-`stargazers_count` int DEFAULT NULL,
-`main_language` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-is_korean boolean default false,
-`created_at` datetime(6) DEFAULT NULL,
-`updated_at` datetime(6) DEFAULT NULL,
-PRIMARY KEY (`id`)
+  `id` int NOT NULL,
+  `login` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `followers` int DEFAULT NULL,
+  `following` int DEFAULT NULL,
+  `size` int DEFAULT NULL,
+  `stargazers_count` int DEFAULT NULL,
+  `main_language` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  is_korean boolean default false,
+  `created_at` datetime(6) DEFAULT NULL,
+  `updated_at` datetime(6) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `g_source_rank` (
+    `id` int NOT NULL,
+    `login` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+    `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+    `size` int DEFAULT NULL,
+    `stargazers_count` int DEFAULT NULL,
+    `language` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `created_at` datetime(6) DEFAULT NULL,
+    `updated_at` datetime(6) DEFAULT NULL,
+    `pushed_at` datetime(6) DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+   alter table g_source_rank add is_korean boolean default false after language;
