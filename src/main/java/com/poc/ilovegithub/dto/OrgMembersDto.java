@@ -7,14 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GitRepoDto {
+public class OrgMembersDto {
     int id;
-    String name;
+    String login;
     Integer size;
-    Integer stargazers_count;
-    String language;
-    String created_at;
-    String updated_at;
-    String pushed_at;
-
+    String type;
 }

@@ -1,10 +1,9 @@
 package com.poc.ilovegithub.job;
 
-import com.poc.ilovegithub.core.domain.GithubUser;
 import com.poc.ilovegithub.core.domain.UserDetail;
 import com.poc.ilovegithub.core.domain.UserStatus;
 import com.poc.ilovegithub.core.repository.UserDetailRepository;
-import com.poc.ilovegithub.core.service.GitRepoInsertService;
+import com.poc.ilovegithub.core.service.OrgMemberInsertService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -29,56 +28,56 @@ import java.util.Collections;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class GitRepoInsertJobConfig {
+public class OrgMemberInsertJobConfig {
     private final Environment env;
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
-    private final GitRepoInsertService gitRepoInsertService;
+    private final OrgMemberInsertService orgMemberInsertService;
     private final UserDetailRepository userDetailRepository;
 
 
-    @Bean("GitRepoInsertJob")
-    public Job gitRepoInsertJob(Step gitRepoInsertStep) {
-        return jobBuilderFactory.get("GitRepoInsertJob")
+    @Bean("OrgMemberInsertJob")
+    public Job orgMemberInsertJob(Step orgMemberInsertStep) {
+        return jobBuilderFactory.get("OrgMemberInsertJob")
                 .incrementer(new RunIdIncrementer())
-                .start(gitRepoInsertStep)
+                .start(orgMemberInsertStep)
                 .build();
     }
 
     @JobScope
-    @Bean("gitRepoInsertStep")
-    public Step gitRepoInsertStep(ItemReader gitRepoInsertReader,
-                                     ItemProcessor gitRepoInsertProcessor,
-                                     ItemWriter gitRepoInsertWriter) {
-        return stepBuilderFactory.get("gitRepoInsertStep")
+    @Bean("orgMemberInsertStep")
+    public Step orgMemberInsertStep(ItemReader orgMemberInsertReader,
+                                     ItemProcessor orgMemberInsertProcessor,
+                                     ItemWriter orgMemberInsertWriter) {
+        return stepBuilderFactory.get("orgMemberInsertStep")
                 .<UserDetail, UserDetail>chunk(Integer.parseInt(env.getProperty("my.fetch-count")))
-                .reader(gitRepoInsertReader)
-                .processor(gitRepoInsertProcessor)
-                .writer(gitRepoInsertWriter)
+                .reader(orgMemberInsertReader)
+                .processor(orgMemberInsertProcessor)
+                .writer(orgMemberInsertWriter)
                 .build();
     }
 
     @StepScope
     @Bean
-    public RepositoryItemReader<UserDetail> gitRepoInsertReader() {
+    public RepositoryItemReader<UserDetail> orgMemberInsertReader() {
         return new RepositoryItemReaderBuilder<UserDetail>()
-                .name("gitRepoInsertReader")
+                .name("orgMemberInsertReader")
                 .repository(userDetailRepository)
-                .methodName("findByStatusEqualsAndIdGreaterThanAndIdLessThan")
+                .methodName("findByTypeEqualsAndStatusEqualsAndIdGreaterThanAndIdLessThan")
                 .pageSize(Integer.parseInt(env.getProperty("my.fetch-count")))
-                .arguments(UserStatus.DETAIL_UPDATED, Integer.parseInt(env.getProperty("my.start-from-id")), Integer.parseInt(env.getProperty("my.end_to_id")))
+                .arguments("Organization", UserStatus.REPO_INSERTED, Integer.parseInt(env.getProperty("my.start-from-id")), Integer.parseInt(env.getProperty("my.end_to_id")))
                 .sorts(Collections.singletonMap("id", Sort.Direction.ASC))
                 .build();
     }
 
     @StepScope
     @Bean
-    public ItemProcessor<UserDetail, UserDetail> gitRepoInsertProcessor() {
+    public ItemProcessor<UserDetail, UserDetail> orgMemberInsertProcessor() {
         return new ItemProcessor<UserDetail, UserDetail>() {
             @Override
             public UserDetail process(UserDetail item) throws Exception {
-                UserDetail userDetail = gitRepoInsertService.gitRepoInsert(item);
+                UserDetail userDetail = orgMemberInsertService.orgMemberInsert(item);
                 return userDetail;
             }
         };
@@ -86,7 +85,7 @@ public class GitRepoInsertJobConfig {
 
     @StepScope
     @Bean
-    public ItemWriter<UserDetail> gitRepoInsertWriter() {
+    public ItemWriter<UserDetail> orgMemberInsertWriter() {
         return items -> {
            items.forEach(item -> userDetailRepository.save(item));
         };

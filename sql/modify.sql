@@ -31,17 +31,43 @@ or blog like '%tistory%');
 
 update g_user b  inner join g_repository a  on b.login = a.login set a.user_id = b.id;
 
-insert into g_user_rank(id, login, type, followers, following, size, stargazers_count,
+insert into g_user_rank(id, login, followers, following, size, stargazers_count,
                         created_at, updated_at, is_korean)
-select a.id, a.login, a.type, a.followers, a.following,
+select a.id, a.login, a.followers, a.following,
        sum(gr.size) size, sum(gr.stargazers_count) stargazers_count,
 a.created_at, a.updated_at, a.is_korean
 from g_user a, g_repository gr
 where a.status = 'REPO_INSERTED'
+  and a.type = 'User'
   and a.login = gr.login
     -- and a.id <=50000
-group by a.id, a.login, a.type, a.followers, a.following, a.created_at, a.updated_at, a.is_korean;
+group by a.id, a.login, a.followers, a.following, a.created_at, a.updated_at, a.is_korean;
 
+
+insert into g_user_rank(id, login, followers, following, size, stargazers_count,
+                        created_at, updated_at, is_korean)
+select a.id, a.login, a.followers, a.following,
+       sum(gr.size) size, sum(gr.stargazers_count) stargazers_count,
+a.created_at, a.updated_at, a.is_korean
+from g_user a, g_repository gr
+where a.status = 'REPO_INSERTED'
+  and a.type = 'User'
+  and a.login = gr.login
+  and a.id > 1500000  and a.id <= 1800000
+group by a.id, a.login, a.followers, a.following, a.created_at, a.updated_at, a.is_korean;
+
+insert into g_org_rank(id, login, people_count, size, stargazers_count,
+                       created_at, updated_at, is_korean)
+select a.id, a.login,
+       (select count(*) count from g_org_members gom2 where gom2.org_id = a.id) people_count,
+    sum(gr.size) size, sum(gr.stargazers_count) stargazers_count,
+    a.created_at, a.updated_at, a.is_korean
+from g_user a, g_repository gr
+where a.status = 'ORG_INSERTED'
+  and a.type = 'Organization'
+  and a.login = gr.login
+     and a.id <=50000
+group by a.id, a.login, a.created_at, a.updated_at, a.is_korean;
 
 
 insert into g_source_rank(id, login, name, size, stargazers_count, language, is_korean, created_at, updated_at, pushed_at)

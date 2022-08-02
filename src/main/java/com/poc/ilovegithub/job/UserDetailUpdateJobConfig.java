@@ -62,8 +62,8 @@ public class UserDetailUpdateJobConfig {
 
     @StepScope
     @Bean
-    public RepositoryItemReader<GithubUser> userDetailReader() {
-        return new RepositoryItemReaderBuilder<GithubUser>()
+    public RepositoryItemReader<UserDetail> userDetailReader() {
+        return new RepositoryItemReaderBuilder<UserDetail>()
                 .name("userDetailReader")
                 .repository(userDetailRepository)
                 .methodName("findByStatusEqualsAndIdGreaterThanAndIdLessThan")
