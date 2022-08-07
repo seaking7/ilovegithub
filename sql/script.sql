@@ -5,7 +5,16 @@
     `type` varchar(100) NOT NULL,
     PRIMARY KEY (`id`));
 
-  
+
+CREATE TABLE `g_member_history` (
+   `seq` bigint NOT NULL AUTO_INCREMENT,
+   id int NOT NULL,
+   `login` varchar(255) NOT NULL,
+   `login_at` datetime(6) DEFAULT (curtime()),
+   PRIMARY KEY (`seq`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
      CREATE TABLE `g_user` (
     `id` int(11) NOT NULL,
    `login` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -23,6 +32,7 @@
   `following` int DEFAULT NULL,
   `created_at` datetime(6) DEFAULT NULL,
   `updated_at` datetime(6) DEFAULT NULL,
+    `fetched_on` datetime(6) DEFAULT (current_time),
     PRIMARY KEY (`id`))
    partition by range(id)(
   	partition p0 values less than (1000000),
@@ -88,7 +98,7 @@ CREATE TABLE `g_user_rank` (
       `followers` int DEFAULT NULL,
       `following` int DEFAULT NULL,
       `size` int DEFAULT 0,
-      `stargazers_count` int 0,
+      `stargazers_count` int DEFAULT 0,
       `main_language` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
       is_korean boolean default false,
       `created_at` datetime(6) DEFAULT NULL,

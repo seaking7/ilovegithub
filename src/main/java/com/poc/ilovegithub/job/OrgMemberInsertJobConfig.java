@@ -47,9 +47,9 @@ public class OrgMemberInsertJobConfig {
 
     @JobScope
     @Bean("orgMemberInsertStep")
-    public Step orgMemberInsertStep(ItemReader orgMemberInsertReader,
-                                     ItemProcessor orgMemberInsertProcessor,
-                                     ItemWriter orgMemberInsertWriter) {
+    public Step orgMemberInsertStep(RepositoryItemReader<UserDetail> orgMemberInsertReader,
+                                    ItemProcessor<UserDetail, UserDetail> orgMemberInsertProcessor,
+                                    ItemWriter<UserDetail> orgMemberInsertWriter) {
         return stepBuilderFactory.get("orgMemberInsertStep")
                 .<UserDetail, UserDetail>chunk(Integer.parseInt(env.getProperty("my.fetch-count")))
                 .reader(orgMemberInsertReader)

@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 @DynamicUpdate
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "G_userRank")
-public class UserRank {
+@Table(name = "G_userRankResult")
+public class UserRankResult {
 
     @Id
     private int id;
@@ -33,5 +33,19 @@ public class UserRank {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public static UserRankResult from(UserRank userRank){
+        return UserRankResult.builder()
+                .id(userRank.getId())
+                .login(userRank.getLogin())
+                .followers(userRank.getFollowers())
+                .following(userRank.getFollowing())
+                .size(userRank.getSize())
+                .stargazersCount(userRank.getStargazersCount())
+                .mainLanguage(userRank.getMainLanguage())
+                .createdAt(userRank.getCreatedAt())
+                .updatedAt(userRank.getUpdatedAt())
+                .build();
+    }
 
 }

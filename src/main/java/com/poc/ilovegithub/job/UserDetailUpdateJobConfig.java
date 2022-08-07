@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Sort;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Slf4j
@@ -49,9 +50,9 @@ public class UserDetailUpdateJobConfig {
 
     @JobScope
     @Bean("userDetailUpdateStep")
-    public Step userDetailUpdateStep(ItemReader userDetailReader,
-                                     ItemProcessor userDetailProcessor,
-                                     ItemWriter userDetailWriter) {
+    public Step userDetailUpdateStep(RepositoryItemReader<UserDetail> userDetailReader,
+                                     ItemProcessor<UserDetail, UserDetail> userDetailProcessor,
+                                     ItemWriter<UserDetail> userDetailWriter) {
         return stepBuilderFactory.get("githubUserInsertStep")
                 .<UserDetail, UserDetail>chunk(Integer.parseInt(env.getProperty("my.fetch-count")))
                 .reader(userDetailReader)
