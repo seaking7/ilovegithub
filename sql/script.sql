@@ -15,6 +15,17 @@ CREATE TABLE `g_member_history` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
+CREATE TABLE `g_rank_job_index` (
+   `id` int NOT NULL AUTO_INCREMENT,
+   `rank_table` varchar(255) NOT NULL,
+   `from_id` int DEFAULT NULL,
+   `to_id` int DEFAULT NULL,
+   `created_at` datetime(6) DEFAULT (current_time),
+   `updated_at` datetime(6) DEFAULT (current_time),
+   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
      CREATE TABLE `g_user` (
     `id` int(11) NOT NULL,
    `login` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -106,6 +117,20 @@ CREATE TABLE `g_user_rank` (
       PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+CREATE TABLE `g_user_rank_result` (
+     `id` int NOT NULL,
+     `login` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+     `followers` int DEFAULT NULL,
+     `following` int DEFAULT NULL,
+     `size` int DEFAULT 0,
+     `stargazers_count` int DEFAULT 0,
+     `main_language` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+     is_korean boolean default false,
+     `created_at` datetime(6) DEFAULT NULL,
+     `updated_at` datetime(6) DEFAULT NULL,
+     PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `g_org_rank` (
  `id` int NOT NULL,

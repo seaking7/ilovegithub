@@ -1,4 +1,4 @@
-package com.poc.ilovegithub.core.domain;
+package com.poc.ilovegithub.core.domain.rank;
 
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @DynamicUpdate
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "G_userRankResult")
+@Table(name = "g_user_rank_result")
 public class UserRankResult {
 
     @Id
@@ -30,21 +30,23 @@ public class UserRankResult {
     private Integer size;
     private Integer stargazersCount;
     private String mainLanguage;
+    private Boolean isKorean;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static UserRankResult from(UserRank userRank){
+    public static UserRankResult from(UserRankTmp userRankTmp){
         return UserRankResult.builder()
-                .id(userRank.getId())
-                .login(userRank.getLogin())
-                .followers(userRank.getFollowers())
-                .following(userRank.getFollowing())
-                .size(userRank.getSize())
-                .stargazersCount(userRank.getStargazersCount())
-                .mainLanguage(userRank.getMainLanguage())
-                .createdAt(userRank.getCreatedAt())
-                .updatedAt(userRank.getUpdatedAt())
+                .id(userRankTmp.getId())
+                .login(userRankTmp.getLogin())
+                .followers(userRankTmp.getFollowers())
+                .following(userRankTmp.getFollowing())
+                .size(userRankTmp.getSize())
+                .stargazersCount(userRankTmp.getStargazersCount())
+                .mainLanguage(userRankTmp.getMainLanguage())
+                .isKorean(userRankTmp.getIsKorean())
+                .createdAt(userRankTmp.getCreatedAt())
+                .updatedAt(userRankTmp.getUpdatedAt())
                 .build();
     }
 

@@ -7,6 +7,7 @@ insert into g_user(id, login, type, status)
 select distinct git_id, login, type, 'INIT'  from g_gituser where git_id > 6262911;
 
 
+
 insert into g_user_rank(id, login, type, followers, following, size, stargazers_count,
                         created_at, updated_at, is_korean)
 select a.id, a.login, a.type, a.followers, a.following,
@@ -20,14 +21,16 @@ group by a.id, a.login, a.type, a.followers, a.following, a.created_at, a.update
 
 
 select * from g_user where is_korean = false
-and (lower(location) like '%korea%' or lower(location) like '%seoul%'
-or blog like '%tistory%');
+   and (lower(location) like '%korea%' or lower(location) like '%seoul%'
+or lower(blog) like '%tistory.com%' or lower(blog) like '%naver.com%'
+or lower(email) like '%hanmail.net%' or lower(email) like '%naver.com%');
 
 select * from g_user where is_korean = true;
 
 update g_user set is_korean = true where is_korean = false
-and (lower(location) like '%korea%' or lower(location) like '%seoul%'
-or blog like '%tistory%');
+     and (lower(location) like '%korea%' or lower(location) like '%seoul%'
+or lower(blog) like '%tistory.com%' or lower(blog) like '%naver.com%'
+or lower(email) like '%hanmail.net%' or lower(email) like '%naver.com%');
 
 update g_user b  inner join g_repository a  on b.login = a.login set a.user_id = b.id;
 
@@ -85,3 +88,8 @@ select id, login, name, size, stargazers_count, language,
 from g_repository gr
 where stargazers_count  > 100
 order by stargazers_count desc;
+
+
+select date_format(start_time, '%Y%m%d'), step_name, sum(WRITE_COUNT) from BATCH_STEP_EXECUTION bse
+group by date_format(start_time, '%Y%m%d'), step_name
+order by date_format(start_time, '%Y%m%d') desc
