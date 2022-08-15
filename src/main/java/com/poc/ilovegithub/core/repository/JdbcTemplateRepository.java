@@ -21,9 +21,8 @@ public class JdbcTemplateRepository {
     public List<String> findMainLanguageByLogin(String login) {
         String query = "select language from g_repository gr  " +
                 "where login = ? and language is not null " +
-                "group by language order by sum(gr.size * gr.stargazers_count) desc limit 3 ";
-        List<String> result = jdbcTemplate.query(query, userRepoRowMapper(), login);
-        return result;
+                "group by language order by sum(gr.stargazers_count) desc limit 3 ";
+        return jdbcTemplate.query(query, userRepoRowMapper(), login);
     }
 
     // user_rank 를 재집계하기 위해 임시성 테이블 truncate
@@ -56,16 +55,16 @@ public class JdbcTemplateRepository {
     @Transactional
     public void updateUserRankResult(){
         int delete_from_g_user_rank = jdbcTemplate.update("delete from g_user_rank");
-        int update = jdbcTemplate.update("insert into g_user_rank (id, login, followers, following, size, stargazers_count, main_language, is_korean, created_at, updated_at)\n" +
-                "select id, login, followers, following, size, stargazers_count, main_language, is_korean, created_at, updated_at from g_user_rank_result ");
+        int update = jdbcTemplate.update("insert into g_user_rank (id, login, followers, following, size, stargazers_count, first_language, second_language, third_language, is_korean, created_at, updated_at)\n" +
+                "select id, login, followers, following, size, stargazers_count, first_language, second_language, third_language, is_korean, created_at, updated_at from g_user_rank_result ");
         log.info("update userRank result : delete:{}, insert:{}", delete_from_g_user_rank, update);
     }
 
     @Transactional
     public void updateOrgRankResult() {
         int delete_from_g_org_rank = jdbcTemplate.update("delete from g_org_rank");
-        int update = jdbcTemplate.update("insert into g_org_rank (id, login, people_count, size, stargazers_count, main_language, is_korean, created_at, updated_at)\n" +
-                "select id, login, people_count, size, stargazers_count, main_language, is_korean, created_at, updated_at from g_org_rank_result ");
+        int update = jdbcTemplate.update("insert into g_org_rank (id, login, people_count, size, stargazers_count, first_language, second_language, third_language, is_korean, created_at, updated_at)\n" +
+                "select id, login, people_count, size, stargazers_count, first_language, second_language, third_language, is_korean, created_at, updated_at from g_org_rank_result ");
         log.info("update orgRank result : delete:{}, insert:{}", delete_from_g_org_rank, update);
     }
 
@@ -84,8 +83,7 @@ public class JdbcTemplateRepository {
                 "group by a.id, a.login,  a.followers, a.following, a.created_at, a.updated_at, a.is_korean\n" +
                 "having stargazers_count > 0";
 
-        int update = jdbcTemplate.update(korean_query, fromId, toId);
-        return update;
+        return jdbcTemplate.update(korean_query, fromId, toId);
     }
 
     private int insertGlobalUserRankTmp(Integer fromId, Integer toId) {
@@ -103,15 +101,11 @@ public class JdbcTemplateRepository {
                 "group by a.id, a.login,  a.followers, a.following, a.created_at, a.updated_at, a.is_korean\n" +
                 "having stargazers_count > 100";
 
-        int update = jdbcTemplate.update(global_query, fromId, toId);
-        return update;
+        return jdbcTemplate.update(global_query, fromId, toId);
     }
 
     private RowMapper<String> userRepoRowMapper() {
-        return (rs, rowNum) -> {
-            String returnValue = rs.getString("language");
-            return returnValue;
-        };
+        return (rs, rowNum) -> rs.getString("language");
     }
 
 
@@ -134,8 +128,7 @@ public class JdbcTemplateRepository {
                 "group by a.id, a.login, a.type, a.created_at, a.updated_at, a.is_korean\n" +
                 "having stargazers_count > 0";
 
-        int update = jdbcTemplate.update(korean_query, fromId, toId);
-        return update;
+        return jdbcTemplate.update(korean_query, fromId, toId);
     }
 
     private int insertGlobalOrgRankTmp(Integer fromId, Integer toId) {
@@ -154,8 +147,7 @@ public class JdbcTemplateRepository {
                 "group by a.id, a.login, a.type, a.created_at, a.updated_at, a.is_korean\n" +
                 "having stargazers_count > 10";
 
-        int update = jdbcTemplate.update(global_query, fromId, toId);
-        return update;
+        return jdbcTemplate.update(global_query, fromId, toId);
     }
 
 

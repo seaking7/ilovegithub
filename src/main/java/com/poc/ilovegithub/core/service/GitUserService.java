@@ -21,8 +21,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import static java.lang.Thread.sleep;
-
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -37,8 +35,8 @@ public class GitUserService {
         String currentMaxGithubId = githubUserRepository.findMaxGitId();
         log.info("Start githubUsersTasklet Batch start from {}", currentMaxGithubId);
 
-        int start = Integer.valueOf(currentMaxGithubId);
-        int loop_cnt = Integer.valueOf(loopCount);
+        int start = Integer.parseInt(currentMaxGithubId);
+        int loop_cnt = Integer.parseInt(loopCount);
 
         for(int i = 1; i <= loop_cnt; i++){
             insertUserListFromGithub(start, READ_PER_PAGE);

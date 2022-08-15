@@ -29,7 +29,9 @@ public class UserRankTmp {
     private Integer following;
     private Integer size;
     private Integer stargazersCount;
-    private String mainLanguage;
+    private String firstLanguage;
+    private String secondLanguage;
+    private String thirdLanguage;
     private Boolean isKorean;
 
     private LocalDateTime createdAt;

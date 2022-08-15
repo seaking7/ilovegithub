@@ -60,7 +60,7 @@ public class OrgMemberInsertService {
                         request,
                         String.class);
 
-                log.debug("StatusCode : {} {}", response.getStatusCode());
+                log.debug("StatusCode : {}", response.getStatusCode());
                 log.debug("Header : {}:", response.getHeaders());
                 log.debug("Body : {}:", response.getBody());
 
@@ -88,10 +88,8 @@ public class OrgMemberInsertService {
             }
         }
 
-        UserDetail returnUserDetail = returnUserDetail1;
-
-        log.info("UserDetail id : {} login: {}", returnUserDetail.getId(), returnUserDetail.getLogin());
-        return returnUserDetail;
+        log.info("UserDetail id : {} login: {}", returnUserDetail1.getId(), returnUserDetail1.getLogin());
+        return returnUserDetail1;
     }
 
     private void saveOrgMembers(ResponseEntity<String> response, String orgLogin, Integer orgId) {

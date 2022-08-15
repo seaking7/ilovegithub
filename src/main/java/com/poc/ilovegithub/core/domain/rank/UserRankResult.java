@@ -29,7 +29,9 @@ public class UserRankResult {
     private Integer following;
     private Integer size;
     private Integer stargazersCount;
-    private String mainLanguage;
+    private String firstLanguage;
+    private String secondLanguage;
+    private String thirdLanguage;
     private Boolean isKorean;
 
     private LocalDateTime createdAt;
@@ -43,7 +45,9 @@ public class UserRankResult {
                 .following(userRankTmp.getFollowing())
                 .size(userRankTmp.getSize())
                 .stargazersCount(userRankTmp.getStargazersCount())
-                .mainLanguage(userRankTmp.getMainLanguage())
+                .firstLanguage(userRankTmp.getFirstLanguage())
+                .secondLanguage(userRankTmp.getSecondLanguage())
+                .thirdLanguage(userRankTmp.getThirdLanguage())
                 .isKorean(userRankTmp.getIsKorean())
                 .createdAt(userRankTmp.getCreatedAt())
                 .updatedAt(userRankTmp.getUpdatedAt())

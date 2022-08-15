@@ -84,7 +84,7 @@ public class MainLanguageStepConfig {
         return new RepositoryItemReaderBuilder<UserRankTmp>()
                 .name("userRankMainLanguageReader")
                 .repository(userRankTmpRepository)
-                .methodName("findAllByMainLanguageIsNull")
+                .methodName("findAllByFirstLanguageIsNull")
                 .pageSize(100)
                 .arguments(Arrays.asList())
                 .sorts(Collections.singletonMap("id", Sort.Direction.ASC))
@@ -105,9 +105,7 @@ public class MainLanguageStepConfig {
     @StepScope
     @Bean
     public ItemWriter<UserRankResult> userRankMainLanguageWriter() {
-        return items -> {
-           items.forEach(item -> userRankResultRepository.save(item));
-        };
+        return items -> items.forEach(item -> userRankResultRepository.save(item));
     }
 
 
@@ -159,19 +157,12 @@ public class MainLanguageStepConfig {
     @StepScope
     @Bean
     public ItemProcessor<OrgRankTmp, OrgRankResult> orgRankMainLanguageProcessor() {
-        return new ItemProcessor<OrgRankTmp, OrgRankResult>() {
-            @Override
-            public OrgRankResult process(OrgRankTmp item) throws Exception {
-                return mainLanguageService.orgRankResultMaker(item);
-            }
-        };
+        return item -> mainLanguageService.orgRankResultMaker(item);
     }
 
     @StepScope
     @Bean
     public ItemWriter<OrgRankResult> orgRankMainLanguageWriter() {
-        return items -> {
-            items.forEach(item -> orgRankResultRepository.save(item));
-        };
+        return items -> items.forEach(item -> orgRankResultRepository.save(item));
     }
 }

@@ -65,13 +65,13 @@ public class RankUpdateJobConfig {
         return new StepExecutionListener() {
             @Override
             public void beforeStep(StepExecution stepExecution) {
-                log.info("---before step truncate table g_user_rank2");
+                log.info("---before userRankStep truncate temp table");
                 jdbcTemplateRepository.truncateUserLankTmp();
             }
 
             @Override
             public ExitStatus afterStep(StepExecution stepExecution) {
-                log.info("---after step");
+                log.info("---after userRankStep");
                 return null;
             }
         };
@@ -94,9 +94,7 @@ public class RankUpdateJobConfig {
     @StepScope
     @Bean
     public ItemWriter<RankJobIndex> userRankWriter() {
-        return items -> {
-           items.forEach(item -> jdbcTemplateRepository.insertUserRankTmp(item.getFromId(), item.getToId()));
-        };
+        return items -> items.forEach(item -> jdbcTemplateRepository.insertUserRankTmp(item.getFromId(), item.getToId()));
     }
 
 
@@ -117,7 +115,7 @@ public class RankUpdateJobConfig {
         return new StepExecutionListener() {
             @Override
             public void beforeStep(StepExecution stepExecution) {
-                log.info("---before orgRankStep truncate table");
+                log.info("---before orgRankStep truncate temp table");
                 jdbcTemplateRepository.truncateOrgLankTmp();
             }
 
@@ -146,9 +144,7 @@ public class RankUpdateJobConfig {
     @StepScope
     @Bean
     public ItemWriter<RankJobIndex> orgRankWriter() {
-        return items -> {
-            items.forEach(item -> jdbcTemplateRepository.insertOrgRankTmp(item.getFromId(), item.getToId()));
-        };
+        return items -> items.forEach(item -> jdbcTemplateRepository.insertOrgRankTmp(item.getFromId(), item.getToId()));
     }
 
 }

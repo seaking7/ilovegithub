@@ -7,7 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRankTmpRepository extends JpaRepository<UserRankTmp, Integer> {
 
-    Page<UserRankTmp> findAllByMainLanguageIsNull(Pageable pageable);
+//    Page<UserRankTmp> findAllByMainLanguageIsNull(Pageable pageable);
 
+    Page<UserRankTmp> findAllByFirstLanguageIsNull(Pageable pageable);
 
 }

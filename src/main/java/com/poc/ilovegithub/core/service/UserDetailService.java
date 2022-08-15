@@ -45,7 +45,7 @@ public class UserDetailService {
                     request,
                     UserDetail.class);
 
-            log.debug("StatusCode : {} {}", response.getStatusCode());
+            log.debug("StatusCode : {}", response.getStatusCode());
             log.debug("Header : {}:", response.getHeaders());
 
             returnUserDetail = response.getBody();

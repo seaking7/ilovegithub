@@ -2,18 +2,17 @@ package com.poc.ilovegithub.core.service;
 
 import com.poc.ilovegithub.core.domain.rank.OrgRankResult;
 import com.poc.ilovegithub.core.domain.rank.OrgRankTmp;
-import com.poc.ilovegithub.core.domain.rank.UserRankTmp;
 import com.poc.ilovegithub.core.domain.rank.UserRankResult;
+import com.poc.ilovegithub.core.domain.rank.UserRankTmp;
 import com.poc.ilovegithub.core.repository.GitRepoRepository;
 import com.poc.ilovegithub.core.repository.JdbcTemplateRepository;
-import com.poc.ilovegithub.core.repository.rank.UserRankTmpRepository;
 import com.poc.ilovegithub.core.repository.rank.UserRankResultRepository;
+import com.poc.ilovegithub.core.repository.rank.UserRankTmpRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -30,7 +29,12 @@ public class MainLanguageService {
         UserRankResult returnUserRank = UserRankResult.from(userRankTmp);
         String login = returnUserRank.getLogin();
 
-        returnUserRank.setMainLanguage(findMainLanguage(login));
+        List<String> mainLanguageByLogin = jdbcTemplateRepository.findMainLanguageByLogin(login);
+        if(mainLanguageByLogin.size() > 0) returnUserRank.setFirstLanguage(mainLanguageByLogin.get(0));
+        if(mainLanguageByLogin.size() > 1) returnUserRank.setSecondLanguage(mainLanguageByLogin.get(1));
+        if(mainLanguageByLogin.size() > 2) returnUserRank.setThirdLanguage(mainLanguageByLogin.get(2));
+
+//        returnUserRank.setMainLanguage(String.join(",", mainLanguageByLogin));
        return returnUserRank;
     }
 
@@ -38,15 +42,13 @@ public class MainLanguageService {
         OrgRankResult returnOrgRank = OrgRankResult.from(orgRankTmp);
         String login = returnOrgRank.getLogin();
 
-        returnOrgRank.setMainLanguage(findMainLanguage(login));
+        List<String> mainLanguageByLogin = jdbcTemplateRepository.findMainLanguageByLogin(login);
+        if(mainLanguageByLogin.size() > 0) returnOrgRank.setFirstLanguage(mainLanguageByLogin.get(0));
+        if(mainLanguageByLogin.size() > 1) returnOrgRank.setSecondLanguage(mainLanguageByLogin.get(1));
+        if(mainLanguageByLogin.size() > 2) returnOrgRank.setThirdLanguage(mainLanguageByLogin.get(2));
+
+//        returnOrgRank.setMainLanguage(String.join(",", mainLanguageByLogin));
         return returnOrgRank;
     }
 
-    private String findMainLanguage(String login) {
-        List<String> mainLanguageByLogin = jdbcTemplateRepository.findMainLanguageByLogin(login);
-
-        String languageConcat = mainLanguageByLogin.stream()
-                .collect(Collectors.joining(","));
-        return languageConcat;
-    }
 }

@@ -1,6 +1,5 @@
 package com.poc.ilovegithub.job;
 
-import com.poc.ilovegithub.core.domain.GithubUser;
 import com.poc.ilovegithub.core.domain.UserDetail;
 import com.poc.ilovegithub.core.domain.UserStatus;
 import com.poc.ilovegithub.core.repository.UserDetailRepository;
@@ -15,17 +14,14 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.data.RepositoryItemReader;
 import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Sort;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 @Slf4j
@@ -77,20 +73,12 @@ public class UserDetailUpdateJobConfig {
     @StepScope
     @Bean
     public ItemProcessor<UserDetail, UserDetail> userDetailProcessor() {
-        return new ItemProcessor<UserDetail, UserDetail>() {
-            @Override
-            public UserDetail process(UserDetail item) throws Exception {
-                UserDetail userDetail = userDetailService.updateUserDetailInfo(item);
-                return userDetail;
-            }
-        };
+        return userDetailService::updateUserDetailInfo;
     }
 
     @StepScope
     @Bean
     public ItemWriter<UserDetail> userDetailWriter() {
-        return items -> {
-           items.forEach(item -> userDetailRepository.save(item));
-        };
+        return items -> items.forEach(userDetailRepository::save);
     }
 }

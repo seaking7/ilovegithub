@@ -14,7 +14,6 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.data.RepositoryItemReader;
 import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
@@ -74,20 +73,12 @@ public class OrgMemberInsertJobConfig {
     @StepScope
     @Bean
     public ItemProcessor<UserDetail, UserDetail> orgMemberInsertProcessor() {
-        return new ItemProcessor<UserDetail, UserDetail>() {
-            @Override
-            public UserDetail process(UserDetail item) throws Exception {
-                UserDetail userDetail = orgMemberInsertService.orgMemberInsert(item);
-                return userDetail;
-            }
-        };
+        return orgMemberInsertService::orgMemberInsert;
     }
 
     @StepScope
     @Bean
     public ItemWriter<UserDetail> orgMemberInsertWriter() {
-        return items -> {
-           items.forEach(item -> userDetailRepository.save(item));
-        };
+        return items -> items.forEach(userDetailRepository::save);
     }
 }

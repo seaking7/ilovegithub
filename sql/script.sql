@@ -103,46 +103,53 @@ create index g_repository_idx1 on g_repository(login);
 
 alter table g_repository add user_id int  DEFAULT null after login;
 
+
 CREATE TABLE `g_user_rank` (
-      `id` int NOT NULL,
-      `login` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-      `followers` int DEFAULT NULL,
-      `following` int DEFAULT NULL,
-      `size` int DEFAULT 0,
-      `stargazers_count` int DEFAULT 0,
-      `main_language` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-      is_korean boolean default false,
-      `created_at` datetime(6) DEFAULT NULL,
-      `updated_at` datetime(6) DEFAULT NULL,
-      PRIMARY KEY (`id`)
+  `id` int NOT NULL,
+  `login` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `followers` int DEFAULT NULL,
+  `following` int DEFAULT NULL,
+  `size` int DEFAULT '0',
+  `stargazers_count` int DEFAULT '0',
+  `first_language` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `second_language` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `third_language` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_korean` tinyint(1) DEFAULT '0',
+  `created_at` datetime(6) DEFAULT NULL,
+  `updated_at` datetime(6) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 CREATE TABLE `g_user_rank_result` (
-     `id` int NOT NULL,
-     `login` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-     `followers` int DEFAULT NULL,
-     `following` int DEFAULT NULL,
-     `size` int DEFAULT 0,
-     `stargazers_count` int DEFAULT 0,
-     `main_language` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-     is_korean boolean default false,
-     `created_at` datetime(6) DEFAULT NULL,
-     `updated_at` datetime(6) DEFAULT NULL,
-     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE `g_org_rank` (
  `id` int NOT NULL,
- `login` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
- `people_count` int DEFAULT 0,
- `size` int DEFAULT 0,
- `stargazers_count` int DEFAULT 0,
- `main_language` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
- is_korean boolean default false,
+ `login` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+ `followers` int DEFAULT NULL,
+ `following` int DEFAULT NULL,
+ `size` int DEFAULT '0',
+ `stargazers_count` int DEFAULT '0',
+ `first_language` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+ `second_language` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+ `third_language` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+ `is_korean` tinyint(1) DEFAULT '0',
  `created_at` datetime(6) DEFAULT NULL,
  `updated_at` datetime(6) DEFAULT NULL,
  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `g_org_rank` (
+     `id` int NOT NULL,
+     `login` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+     `people_count` int DEFAULT '0',
+     `size` int DEFAULT '0',
+     `stargazers_count` int DEFAULT '0',
+     `first_language` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+     `second_language` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+     `third_language` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+     `is_korean` tinyint(1) DEFAULT '0',
+     `created_at` datetime(6) DEFAULT NULL,
+     `updated_at` datetime(6) DEFAULT NULL,
+     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `g_source_rank` (

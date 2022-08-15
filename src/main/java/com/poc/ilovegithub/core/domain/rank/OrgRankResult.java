@@ -28,7 +28,9 @@ public class OrgRankResult {
     private Integer peopleCount;
     private Integer size;
     private Integer stargazersCount;
-    private String mainLanguage;
+    private String firstLanguage;
+    private String secondLanguage;
+    private String thirdLanguage;
     private Boolean isKorean;
 
     private LocalDateTime createdAt;
@@ -41,7 +43,9 @@ public class OrgRankResult {
                 .peopleCount(orgRankTmp.getPeopleCount())
                 .size(orgRankTmp.getSize())
                 .stargazersCount(orgRankTmp.getStargazersCount())
-                .mainLanguage(orgRankTmp.getMainLanguage())
+                .firstLanguage(orgRankTmp.getFirstLanguage())
+                .secondLanguage(orgRankTmp.getSecondLanguage())
+                .thirdLanguage(orgRankTmp.getThirdLanguage())
                 .isKorean(orgRankTmp.getIsKorean())
                 .createdAt(orgRankTmp.getCreatedAt())
                 .updatedAt(orgRankTmp.getUpdatedAt())

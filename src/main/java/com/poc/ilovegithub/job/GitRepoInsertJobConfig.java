@@ -1,6 +1,5 @@
 package com.poc.ilovegithub.job;
 
-import com.poc.ilovegithub.core.domain.GithubUser;
 import com.poc.ilovegithub.core.domain.UserDetail;
 import com.poc.ilovegithub.core.domain.UserStatus;
 import com.poc.ilovegithub.core.repository.UserDetailRepository;
@@ -75,20 +74,12 @@ public class GitRepoInsertJobConfig {
     @StepScope
     @Bean
     public ItemProcessor<UserDetail, UserDetail> gitRepoInsertProcessor() {
-        return new ItemProcessor<UserDetail, UserDetail>() {
-            @Override
-            public UserDetail process(UserDetail item) throws Exception {
-                UserDetail userDetail = gitRepoInsertService.gitRepoInsert(item);
-                return userDetail;
-            }
-        };
+        return gitRepoInsertService::gitRepoInsert;
     }
 
     @StepScope
     @Bean
     public ItemWriter<UserDetail> gitRepoInsertWriter() {
-        return items -> {
-           items.forEach(item -> userDetailRepository.save(item));
-        };
+        return items -> items.forEach(userDetailRepository::save);
     }
 }

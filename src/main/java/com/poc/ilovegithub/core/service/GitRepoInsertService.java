@@ -55,7 +55,7 @@ public class GitRepoInsertService {
                     request,
                     String.class);
 
-            log.debug("StatusCode : {} {}", response.getStatusCode());
+            log.debug("StatusCode : {}", response.getStatusCode());
             log.debug("Header : {}:", response.getHeaders());
 
             saveGitRepo(response, userDetail.getLogin(), userDetail.getId());
