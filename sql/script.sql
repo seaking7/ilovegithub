@@ -63,6 +63,30 @@ CREATE TABLE `g_rank_job_index` (
    alter table g_user add partition ( partition p99 VALUES LESS THAN MAXVALUE);
    alter table g_user drop  PARTITION p10;
 
+alter table g_user drop PARTITION p99;
+
+alter table g_user add partition ( partition p31 VALUES LESS THAN (31000000));
+
+alter table g_user add partition ( partition p32 VALUES LESS THAN (32000000));
+
+alter table g_user add partition ( partition p33 VALUES LESS THAN (33000000));
+
+alter table g_user add partition ( partition p34 VALUES LESS THAN (34000000));
+
+alter table g_user add partition ( partition p35 VALUES LESS THAN (35000000));
+
+alter table g_user add partition ( partition p36 VALUES LESS THAN (36000000));
+
+alter table g_user add partition ( partition p37 VALUES LESS THAN (37000000));
+
+alter table g_user add partition ( partition p38 VALUES LESS THAN (38000000));
+
+alter table g_user add partition ( partition p39 VALUES LESS THAN (39000000));
+
+alter table g_user add partition ( partition p40 VALUES LESS THAN (40000000));
+
+alter table g_user add partition ( partition p99 VALUES LESS THAN MAXVALUE);
+
    CREATE TABLE `g_user` (
   `id` int NOT NULL,
   `login` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -85,6 +109,42 @@ CREATE TABLE `g_rank_job_index` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 alter table g_user add is_korean boolean default false;
+
+
+CREATE TABLE `g_member` (
+   `id` int NOT NULL,
+   `login` varchar(255) NOT NULL,
+   `status` varchar(200) DEFAULT 'INIT',
+   `name` varchar(255) DEFAULT NULL,
+   `role` varchar(255) NOT NULL,
+   `type` varchar(255) NOT NULL,
+   `blog` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+   `company` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+   `location` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+   `bio` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+   `public_repos` int DEFAULT 0,
+   `followers` int DEFAULT 0,
+   `following` int DEFAULT 0,
+   `created_at` datetime(6) DEFAULT NULL,
+   `updated_at` datetime(6) DEFAULT NULL,
+   joined_at datetime(6) DEFAULT (curtime()),
+   last_login_at datetime(6) DEFAULT (curtime()),
+   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `g_question` (
+ `id` bigint NOT NULL AUTO_INCREMENT,
+ `login` varchar(255) NOT NULL,
+ `name` varchar(255) DEFAULT NULL,
+ `content` varchar(10000) DEFAULT NULL,
+ `content_type` varchar(255) DEFAULT NULL,
+ `created_at` datetime(6) DEFAULT NULL,
+ `updated_at` datetime(6) DEFAULT NULL,
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 CREATE TABLE `g_repository` (
   `id` int NOT NULL,
@@ -180,20 +240,20 @@ CREATE TABLE `g_org_members` (
 
 
 
-   CREATE TABLE `g_repository` (
-                                   `id` int NOT NULL,
-                                   `login` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-                                   `user_id` int DEFAULT NULL,
-                                   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-                                   `size` int DEFAULT NULL,
-                                   `stargazers_count` int DEFAULT NULL,
-                                   `language` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-                                   `created_at` datetime(6) DEFAULT NULL,
-                                   `updated_at` datetime(6) DEFAULT NULL,
-                                   `pushed_at` datetime(6) DEFAULT NULL,
-                                   `fetched_on` datetime(6) DEFAULT NULL,
-                                   PRIMARY KEY (`id`),
-                                   KEY `g_repository_idx1` (`login`)
+CREATE TABLE `g_repository` (
+           `id` int NOT NULL,
+           `login` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+           `user_id` int DEFAULT NULL,
+           `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+           `size` int DEFAULT NULL,
+           `stargazers_count` int DEFAULT NULL,
+           `language` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+           `created_at` datetime(6) DEFAULT NULL,
+           `updated_at` datetime(6) DEFAULT NULL,
+           `pushed_at` datetime(6) DEFAULT NULL,
+           `fetched_on` datetime(6) DEFAULT NULL,
+           PRIMARY KEY (`id`),
+           KEY `g_repository_idx1` (`login`)
    ) partition by range(id)(
   	partition p0 values less than (10000000),
   	partition p1 values less than (20000000),

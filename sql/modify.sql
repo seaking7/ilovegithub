@@ -4,8 +4,7 @@ select distinct git_id, login, type, 'INIT' from g_gituser
 where git_id > 109630;
 
 insert into g_user(id, login, type, status)
-select distinct git_id, login, type, 'INIT'  from g_gituser where git_id > 6262911;
-
+select distinct git_id, login, type, 'INIT'  from g_gituser where git_id > 17801101;
 
 
 insert into g_user_rank(id, login, type, followers, following, size, stargazers_count,

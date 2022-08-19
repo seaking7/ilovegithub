@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 public class UserDetailService {
     private final Environment env;
 
+
     public UserDetail updateUserDetailInfo(UserDetail userDetail) throws InterruptedException {
 
         UriComponentsBuilder uriBuilder = makeUrlForGetUserDetail(userDetail);

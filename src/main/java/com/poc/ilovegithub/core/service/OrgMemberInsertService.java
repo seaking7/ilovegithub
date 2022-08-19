@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -28,6 +29,7 @@ public class OrgMemberInsertService {
     public final static int MAX_ORG_MEMBER_PAGE = 100;
     OrgMembersRepository orgMembersRepository;
 
+    @Transactional
     public UserDetail orgMemberInsert(UserDetail userDetail) throws InterruptedException {
 
         RestTemplate restTemplate = new RestTemplate();
@@ -38,7 +40,9 @@ public class OrgMemberInsertService {
         headers.set("Authorization", "token "+ env.getProperty("my.git-token"));
 
         HttpEntity request = new HttpEntity(headers);
-        UserDetail returnUserDetail1 = userDetail;
+        UserDetail returnUserDetail = userDetail;
+
+        orgMembersRepository.deleteAllByOrOrgLoginEquals(userDetail.getLogin());  // org 의 people 정보 insert 전에 기존 있는 내용 삭제
 
         for(int i=1; i< MAX_ORG_MEMBER_PAGE; i++)
         {
@@ -65,17 +69,17 @@ public class OrgMemberInsertService {
                 log.debug("Body : {}:", response.getBody());
 
                 if(response.getBody().toString().equals("[]")){
-                    returnUserDetail1.setStatus(UserStatus.ORG_INSERTED);
+                    returnUserDetail.setStatus(UserStatus.ORG_INSERTED);
                     break;
                 }
 
                 saveOrgMembers(response, userDetail.getLogin(), userDetail.getId());
-                returnUserDetail1.setStatus(UserStatus.ORG_INSERTED);
+                returnUserDetail.setStatus(UserStatus.ORG_INSERTED);
 
             } catch ( HttpClientErrorException e) {
                 log.info("Exception  : {} {} {}", userDetail.getLogin(), e.getStatusCode(), e.getMessage());
                 if(e.getStatusCode().equals(HttpStatus.NOT_FOUND)){
-                    returnUserDetail1.setStatus(UserStatus.NOT_FOUND);
+                    returnUserDetail.setStatus(UserStatus.NOT_FOUND);
                     break;
                 } else{
                     Thread.sleep(1200000);  //403 API rate limit exceeded. 20분 sleep
@@ -88,8 +92,8 @@ public class OrgMemberInsertService {
             }
         }
 
-        log.info("UserDetail id : {} login: {}", returnUserDetail1.getId(), returnUserDetail1.getLogin());
-        return returnUserDetail1;
+        log.info("UserDetail id : {} login: {}", returnUserDetail.getId(), returnUserDetail.getLogin());
+        return returnUserDetail;
     }
 
     private void saveOrgMembers(ResponseEntity<String> response, String orgLogin, Integer orgId) {

@@ -18,6 +18,7 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.data.RepositoryItemReader;
 import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -60,21 +61,38 @@ public class GitRepoInsertJobConfig {
 
     @StepScope
     @Bean
-    public RepositoryItemReader<UserDetail> gitRepoInsertReader() {
-        return new RepositoryItemReaderBuilder<UserDetail>()
-                .name("gitRepoInsertReader")
-                .repository(userDetailRepository)
-                .methodName("findByStatusEqualsAndIdGreaterThanAndIdLessThan")
-                .pageSize(Integer.parseInt(env.getProperty("my.fetch-count")))
-                .arguments(UserStatus.DETAIL_UPDATED, Integer.parseInt(env.getProperty("my.start-from-id")), Integer.parseInt(env.getProperty("my.end_to_id")))
-                .sorts(Collections.singletonMap("id", Sort.Direction.ASC))
-                .build();
+    public RepositoryItemReader<UserDetail> gitRepoInsertReader(@Value("#{jobParameters['repoInsertType']}") String repoInsertType) {
+        if(repoInsertType.equals("Organization")){
+            return new RepositoryItemReaderBuilder<UserDetail>()
+                    .name("gitRepoInsertReader")
+                    .repository(userDetailRepository)
+                    .methodName("findByTypeEqualsAndStatusEqualsAndIdGreaterThanAndIdLessThan")
+                    .pageSize(Integer.parseInt(env.getProperty("my.fetch-count")))
+                    .arguments("Organization", UserStatus.DETAIL_UPDATED, Integer.parseInt(env.getProperty("my.start-from-id")), Integer.parseInt(env.getProperty("my.end_to_id")))
+                    .sorts(Collections.singletonMap("id", Sort.Direction.ASC))
+                    .build();
+        } else{
+            return new RepositoryItemReaderBuilder<UserDetail>()
+                    .name("gitRepoInsertReader")
+                    .repository(userDetailRepository)
+                    .methodName("findByTypeEqualsAndStatusEqualsAndIdGreaterThanAndIdLessThan")
+                    .pageSize(Integer.parseInt(env.getProperty("my.fetch-count")))
+                    .arguments("User", UserStatus.DETAIL_UPDATED, Integer.parseInt(env.getProperty("my.start-from-id")), Integer.parseInt(env.getProperty("my.end_to_id")))
+                    .sorts(Collections.singletonMap("id", Sort.Direction.ASC))
+                    .build();
+        }
+
     }
 
     @StepScope
     @Bean
-    public ItemProcessor<UserDetail, UserDetail> gitRepoInsertProcessor() {
-        return gitRepoInsertService::gitRepoInsert;
+    public ItemProcessor<UserDetail, UserDetail> gitRepoInsertProcessor(@Value("#{jobParameters['repoInsertType']}") String repoInsertType) {
+        if(repoInsertType.equals("Organization")) {
+            return userDetail -> gitRepoInsertService.gitRepoInsert(userDetail, "orgs");
+        } else {
+            return userDetail -> gitRepoInsertService.gitRepoInsert(userDetail, "users");
+        }
+
     }
 
     @StepScope

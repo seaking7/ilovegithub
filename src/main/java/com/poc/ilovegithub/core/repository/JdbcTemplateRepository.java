@@ -31,6 +31,7 @@ public class JdbcTemplateRepository {
         jdbcTemplate.execute("truncate table g_user_rank_result");
     }
 
+    // org_rank 를 재집계하기 위해 임시성 테이블 truncate
     public void truncateOrgLankTmp(){
         jdbcTemplate.execute("truncate table g_org_rank_tmp");
         jdbcTemplate.execute("truncate table g_org_rank_result");
