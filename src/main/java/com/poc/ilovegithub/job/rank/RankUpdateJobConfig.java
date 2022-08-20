@@ -65,13 +65,15 @@ public class RankUpdateJobConfig {
         return new StepExecutionListener() {
             @Override
             public void beforeStep(StepExecution stepExecution) {
-                log.info("---before userRankStep truncate temp table");
+                log.info("===userRankStep START, updateKoreanInfo start");
+                jdbcTemplateRepository.updateKoreanInfo();
+                log.info("---userRankStep ING,  updateKoreanInfo End, userRankStep truncate start");
                 jdbcTemplateRepository.truncateUserLankTmp();
             }
 
             @Override
             public ExitStatus afterStep(StepExecution stepExecution) {
-                log.info("---after userRankStep");
+                log.info("==== userRankStep END");
                 return null;
             }
         };
@@ -115,13 +117,13 @@ public class RankUpdateJobConfig {
         return new StepExecutionListener() {
             @Override
             public void beforeStep(StepExecution stepExecution) {
-                log.info("---before orgRankStep truncate temp table");
+                log.info("===orgRankStep START ,  truncateOrgLankTmp start");
                 jdbcTemplateRepository.truncateOrgLankTmp();
             }
 
             @Override
             public ExitStatus afterStep(StepExecution stepExecution) {
-                log.info("---after orgRankStep");
+                log.info("===orgRankStep END");
                 return null;
             }
         };

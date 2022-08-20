@@ -69,6 +69,16 @@ public class JdbcTemplateRepository {
         log.info("update orgRank result : delete:{}, insert:{}", delete_from_g_org_rank, update);
     }
 
+    @Transactional
+    public void updateKoreanInfo() {
+        int update = jdbcTemplate.update("update g_user set is_korean = true where is_korean = false\n" +
+                    "     and (lower(location) like '%korea%' or lower(location) like '%seoul%'\n" +
+                    "or lower(blog) like '%tistory.com%' or lower(blog) like '%naver.com%' \n" +
+                    "or lower(email) like '%hanmail.net%' or lower(email) like '%naver.com%') ");
+        log.info("updateKoreanInfo : update:{}", update);
+    }
+
+
     private int insertKoreanUserRankTmp(Integer fromId, Integer toId) {
         String korean_query = "insert into g_user_rank_tmp(id, login, followers, following, size, stargazers_count,\n" +
                 "                        created_at, updated_at, is_korean)\n" +
@@ -77,8 +87,7 @@ public class JdbcTemplateRepository {
                 "(select sum(gr2.stargazers_count) star from g_repository gr2 where gr2.login = a.login) stargazers_count,\n" +
                 "a.created_at, a.updated_at, a.is_korean\n" +
                 "from g_user a\n" +
-                "where a.status = 'REPO_INSERTED'\n" +
-                "  and a.type = 'User'\n" +
+                "where a.type = 'User'\n" +
                 "and a.id >= ?  and a.id < ?\n" +
                 "and a.is_korean is true and a.followers > 0\n" +
                 "group by a.id, a.login,  a.followers, a.following, a.created_at, a.updated_at, a.is_korean\n" +
@@ -95,8 +104,7 @@ public class JdbcTemplateRepository {
                 "(select sum(gr2.stargazers_count) star from g_repository gr2 where gr2.login = a.login) stargazers_count,\n" +
                 "a.created_at, a.updated_at, a.is_korean\n" +
                 "from g_user a\n" +
-                "where a.status = 'REPO_INSERTED'\n" +
-                "  and a.type = 'User'\n" +
+                "where a.type = 'User'\n" +
                 "and a.id >= ?  and a.id < ?\n" +
                 "and a.is_korean is false and a.followers > 100\n" +
                 "group by a.id, a.login,  a.followers, a.following, a.created_at, a.updated_at, a.is_korean\n" +
@@ -111,8 +119,6 @@ public class JdbcTemplateRepository {
 
 
 
-
-
     private int insertKoreanOrgRankTmp(Integer fromId, Integer toId) {
         String korean_query =  "insert into g_org_rank_tmp(id, login, people_count, size, stargazers_count,\n" +
                 "                        created_at, updated_at, is_korean)\n" +
@@ -122,8 +128,7 @@ public class JdbcTemplateRepository {
                 " (select sum(gr2.stargazers_count) star from g_repository gr2 where gr2.login = a.login) stargazers_count,\n" +
                 "a.created_at, a.updated_at, a.is_korean\n" +
                 "from g_user a\n" +
-                "where a.status = 'ORG_INSERTED'\n" +
-                "and a.type = 'Organization'\n" +
+                "where a.type = 'Organization'\n" +
                 " and a.id >= ?  and a.id < ? \n" +
                 " and a.is_korean is true \n" +
                 "group by a.id, a.login, a.type, a.created_at, a.updated_at, a.is_korean\n" +
@@ -141,8 +146,7 @@ public class JdbcTemplateRepository {
                 " (select sum(gr2.stargazers_count) star from g_repository gr2 where gr2.login = a.login) stargazers_count,\n" +
                 "a.created_at, a.updated_at, a.is_korean\n" +
                 "from g_user a\n" +
-                "where a.status = 'ORG_INSERTED'\n" +
-                "and a.type = 'Organization'\n" +
+                "where a.type = 'Organization'\n" +
                 " and a.id >= ?  and a.id < ? \n" +
                 " and a.is_korean is false\n" +
                 "group by a.id, a.login, a.type, a.created_at, a.updated_at, a.is_korean\n" +

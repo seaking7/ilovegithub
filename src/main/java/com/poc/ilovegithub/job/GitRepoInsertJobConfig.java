@@ -31,6 +31,8 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class GitRepoInsertJobConfig {
     private final Environment env;
+
+    private final static int REPO_CHECK_FOLLOWER_SIZE = 10;
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
@@ -75,9 +77,9 @@ public class GitRepoInsertJobConfig {
             return new RepositoryItemReaderBuilder<UserDetail>()
                     .name("gitRepoInsertReader")
                     .repository(userDetailRepository)
-                    .methodName("findByTypeEqualsAndStatusEqualsAndIdGreaterThanAndIdLessThan")
+                    .methodName("findByTypeEqualsAndStatusEqualsAndFollowersIsGreaterThanAndIdGreaterThanAndIdLessThan")
                     .pageSize(Integer.parseInt(env.getProperty("my.fetch-count")))
-                    .arguments("User", UserStatus.DETAIL_UPDATED, Integer.parseInt(env.getProperty("my.start-from-id")), Integer.parseInt(env.getProperty("my.end_to_id")))
+                    .arguments("User", UserStatus.DETAIL_UPDATED, REPO_CHECK_FOLLOWER_SIZE, Integer.parseInt(env.getProperty("my.start-from-id")), Integer.parseInt(env.getProperty("my.end_to_id")))
                     .sorts(Collections.singletonMap("id", Sort.Direction.ASC))
                     .build();
         }

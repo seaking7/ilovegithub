@@ -77,6 +77,7 @@ public class GitRepoInsertService {
                 log.info("Exception  : {} {} {}", userDetail.getLogin(), e.getStatusCode(), e.getMessage());
                 if(e.getStatusCode().equals(HttpStatus.NOT_FOUND)){
                     returnUserDetail.setStatus(UserStatus.NOT_FOUND);
+                    break;
                 } else{
                     Thread.sleep(1200000);  //403 API rate limit exceeded. 20분 sleep
                     i--;   //403인 경우 해당 page 다시 시도함
