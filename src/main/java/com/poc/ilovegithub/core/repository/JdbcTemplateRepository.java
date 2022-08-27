@@ -73,7 +73,7 @@ public class JdbcTemplateRepository {
     public void updateKoreanInfo() {
         int update = jdbcTemplate.update("update g_user set is_korean = true where is_korean = false\n" +
                     "     and (lower(location) like '%korea%' or lower(location) like '%seoul%'\n" +
-                    "or lower(blog) like '%tistory.com%' or lower(blog) like '%naver.com%' \n" +
+                    "or lower(blog) like '%tistory.com%' or lower(blog) like '%naver.com%' or lower(blog) like '%egloos.com%' \n" +
                     "or lower(email) like '%hanmail.net%' or lower(email) like '%naver.com%') ");
         log.info("updateKoreanInfo : update:{}", update);
     }
