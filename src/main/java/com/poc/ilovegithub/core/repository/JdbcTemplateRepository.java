@@ -156,4 +156,26 @@ public class JdbcTemplateRepository {
     }
 
 
+    // g_source_rank_result 에 기존 데이터 삭제후 랭크 집계 갱신
+    @Transactional
+    public void updateSourceRankResult(){
+        jdbcTemplate.execute("truncate table g_source_rank_tmp");
+        jdbcTemplate.update("insert into g_source_rank_tmp(id, login, user_id, name, size, stargazers_count, language, is_korean, created_at, updated_at, pushed_at)\n" +
+                "select id, login, user_id, name, size, stargazers_count, language,\n" +
+                "    (select is_korean from g_user a where a.id = gr.user_id ) is_korean,\n" +
+                "    created_at, updated_at , pushed_at\n" +
+                "from g_repository gr\n" +
+                "where stargazers_count  > 1000\n" +
+                "order by stargazers_count desc ");
+
+
+        int delete_rank = jdbcTemplate.update("delete from g_source_rank");
+
+        int update = jdbcTemplate.update("insert into g_source_rank(id, login, user_id, name, size, stargazers_count, language, is_korean, created_at, updated_at, pushed_at)\n" +
+                "select id, login, user_id, name, size, stargazers_count, language, is_korean, created_at, updated_at, pushed_at\n" +
+                "from g_source_rank_tmp ");
+        log.info("update sourceRank result : delete:{}, insert:{}", delete_rank, update);
+    }
+
+
 }

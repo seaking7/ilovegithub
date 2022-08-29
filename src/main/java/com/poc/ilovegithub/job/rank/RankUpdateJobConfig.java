@@ -67,6 +67,8 @@ public class RankUpdateJobConfig {
             public void beforeStep(StepExecution stepExecution) {
                 log.info("===userRankStep START, updateKoreanInfo start");
                 jdbcTemplateRepository.updateKoreanInfo();
+                log.info("===userRankStep ING, updateSourceRank start");
+                jdbcTemplateRepository.updateSourceRankResult();
                 log.info("---userRankStep ING,  updateKoreanInfo End, userRankStep truncate start");
                 jdbcTemplateRepository.truncateUserLankTmp();
             }
@@ -148,5 +150,7 @@ public class RankUpdateJobConfig {
     public ItemWriter<RankJobIndex> orgRankWriter() {
         return items -> items.forEach(item -> jdbcTemplateRepository.insertOrgRankTmp(item.getFromId(), item.getToId()));
     }
+
+
 
 }
