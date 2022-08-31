@@ -63,7 +63,7 @@ CREATE TABLE `g_rank_job_index` (
    alter table g_user add partition ( partition p99 VALUES LESS THAN MAXVALUE);
    alter table g_user drop  PARTITION p10;
 
-alter table g_user drop PARTITION p99;
+alter table g_user drop PARTITION p999;
 
 alter table g_user add partition ( partition p31 VALUES LESS THAN (31000000));
 
@@ -86,6 +86,33 @@ alter table g_user add partition ( partition p39 VALUES LESS THAN (39000000));
 alter table g_user add partition ( partition p40 VALUES LESS THAN (40000000));
 
 alter table g_user add partition ( partition p99 VALUES LESS THAN MAXVALUE);
+
+
+
+
+alter table g_user drop PARTITION p999;
+
+alter table g_user add partition ( partition p91 VALUES LESS THAN (91000000));
+
+alter table g_user add partition ( partition p92 VALUES LESS THAN (92000000));
+
+alter table g_user add partition ( partition p93 VALUES LESS THAN (93000000));
+
+alter table g_user add partition ( partition p94 VALUES LESS THAN (94000000));
+
+alter table g_user add partition ( partition p95 VALUES LESS THAN (95000000));
+
+alter table g_user add partition ( partition p96 VALUES LESS THAN (96000000));
+
+alter table g_user add partition ( partition p97 VALUES LESS THAN (97000000));
+
+alter table g_user add partition ( partition p98 VALUES LESS THAN (98000000));
+
+alter table g_user add partition ( partition p99 VALUES LESS THAN (99000000));
+
+alter table g_user add partition ( partition p100 VALUES LESS THAN (100000000));
+
+alter table g_user add partition ( partition p999 VALUES LESS THAN MAXVALUE);
 
    CREATE TABLE `g_user` (
   `id` int NOT NULL,
@@ -212,20 +239,21 @@ CREATE TABLE `g_org_rank` (
      PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
 CREATE TABLE `g_source_rank` (
     `id` int NOT NULL,
-    `login` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-    `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-    `size` int DEFAULT 0,
-    `stargazers_count` int DEFAULT 0,
-    `language` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `login` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    user_id int NOT NULL,
+    `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    `size` int DEFAULT '0',
+    `stargazers_count` int DEFAULT '0',
+    `language` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `is_korean` tinyint(1) DEFAULT '0',
     `created_at` datetime(6) DEFAULT NULL,
     `updated_at` datetime(6) DEFAULT NULL,
     `pushed_at` datetime(6) DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-   alter table g_source_rank add is_korean boolean default false after language;
 
 
 CREATE TABLE `g_org_members` (
@@ -237,7 +265,6 @@ CREATE TABLE `g_org_members` (
     `type` varchar(100) NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 
 
 CREATE TABLE `g_repository` (

@@ -31,5 +31,7 @@ public class MailSender {
     @Column(nullable = false)
     private String status;
 
+    private String mailType;
+
     private LocalDateTime createdAt;
 }

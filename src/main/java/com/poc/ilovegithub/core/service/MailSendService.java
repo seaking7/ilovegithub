@@ -27,14 +27,26 @@ public class MailSendService {
         mimeMessage.setText(sender.getContent(), "UTF-8", "html");
         mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(sender.getEmail()));
 
-        mailSender.send(mimeMessage);
+        // to-do 메일발송 실패시 별도 실패테이블에 넣고, 작업종료 후 실패내역 전송 테이블에서 삭제
+        if(isEmailFormat(sender.getEmail())) mailSender.send(mimeMessage);
 
         return MailResult.builder()
                 .email(sender.getEmail())
                 .content(sender.getContent())
                 .title(sender.getTitle())
+                .mailType(sender.getMailType())
                 .sendAt(LocalDateTime.now())
                 .build();
+    }
+
+
+    private boolean isEmailFormat(String toMail) {
+        String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+        if (toMail != null && toMail.matches(EMAIL_PATTERN)) {
+            return true;
+        }
+        return false;
     }
 
 }

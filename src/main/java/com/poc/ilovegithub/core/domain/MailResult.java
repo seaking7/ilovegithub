@@ -28,5 +28,7 @@ public class MailResult {
     @Column(nullable = false)
     private String email;
 
+    private String mailType;
+
     private LocalDateTime sendAt;
 }
