@@ -3,13 +3,14 @@ package com.poc.ilovegithub.job;
 import com.poc.ilovegithub.core.domain.MailResult;
 import com.poc.ilovegithub.core.domain.MailSender;
 import com.poc.ilovegithub.core.domain.UserDetail;
+import com.poc.ilovegithub.core.repository.JdbcTemplateRepository;
 import com.poc.ilovegithub.core.repository.MailResultRepository;
 import com.poc.ilovegithub.core.repository.MailSenderRepository;
+import com.poc.ilovegithub.core.repository.MailTemplateRepository;
 import com.poc.ilovegithub.core.service.MailSendService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -39,6 +40,8 @@ public class MailSendJobConfig {
     private final MailSenderRepository mailSenderRepository;
     private final MailResultRepository mailResultRepository;
 
+    private final MailTemplateRepository mailTemplateRepository;
+
     @Bean("MailSendJob")
     public Job mailSendJob(Step mailSendStep) {
         return jobBuilderFactory.get("MailSendJob")
@@ -53,11 +56,31 @@ public class MailSendJobConfig {
                                      ItemProcessor mailSendProcessor,
                                      ItemWriter mailSendWriter) {
         return stepBuilderFactory.get("mailSendStep")
+                .listener(mailSendStepListener())
                 .<UserDetail, UserDetail>chunk(MAIL_SEND_BATCH_SIZE)
                 .reader(mailSendReader)
                 .processor(mailSendProcessor)
                 .writer(mailSendWriter)
                 .build();
+    }
+
+
+    public StepExecutionListener mailSendStepListener(){
+        return new StepExecutionListener() {
+            @Override
+            public void beforeStep(StepExecution stepExecution) {
+                log.info("===mailSendStep START");
+                mailTemplateRepository.insertKoreanUserTarget();
+
+            }
+
+            @Override
+            public ExitStatus afterStep(StepExecution stepExecution) {
+                mailTemplateRepository.deleteMailSenderAfterSend();
+                log.info("==== mailSendStep END");
+                return null;
+            }
+        };
     }
 
     @StepScope

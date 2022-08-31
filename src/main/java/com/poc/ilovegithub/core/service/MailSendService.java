@@ -2,6 +2,7 @@ package com.poc.ilovegithub.core.service;
 
 import com.poc.ilovegithub.core.domain.MailResult;
 import com.poc.ilovegithub.core.domain.MailSender;
+import com.poc.ilovegithub.core.repository.MailTemplateRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -19,16 +20,22 @@ import java.time.LocalDateTime;
 public class MailSendService {
 
     private final JavaMailSender mailSender;
+    private final MailTemplateRepository mailTemplateRepository;
 
-    public MailResult emailSend(MailSender sender) throws MessagingException {
+    public MailResult emailSend(MailSender sender) {
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();
-        mimeMessage.setSubject(sender.getTitle());
-        mimeMessage.setText(sender.getContent(), "UTF-8", "html");
-        mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(sender.getEmail()));
+        try{
+            mimeMessage.setSubject(sender.getTitle());
+            mimeMessage.setText(sender.getContent(), "UTF-8", "html");
+            mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(sender.getEmail()));
 
-        // to-do 메일발송 실패시 별도 실패테이블에 넣고, 작업종료 후 실패내역 전송 테이블에서 삭제
-        if(isEmailFormat(sender.getEmail())) mailSender.send(mimeMessage);
+            if(isEmailFormat(sender.getEmail())) mailSender.send(mimeMessage);
+        } catch( Exception e)
+        {
+            mailTemplateRepository.insertFailUser(sender.getEmail());
+        }
+
 
         return MailResult.builder()
                 .email(sender.getEmail())
