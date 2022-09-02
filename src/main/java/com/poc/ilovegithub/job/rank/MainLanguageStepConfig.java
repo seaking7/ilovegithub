@@ -6,10 +6,7 @@ import com.poc.ilovegithub.core.domain.rank.OrgRankTmp;
 import com.poc.ilovegithub.core.domain.rank.UserRankResult;
 import com.poc.ilovegithub.core.domain.rank.UserRankTmp;
 import com.poc.ilovegithub.core.repository.JdbcTemplateRepository;
-import com.poc.ilovegithub.core.repository.rank.OrgRankResultRepository;
-import com.poc.ilovegithub.core.repository.rank.OrgRankTmpRepository;
-import com.poc.ilovegithub.core.repository.rank.UserRankResultRepository;
-import com.poc.ilovegithub.core.repository.rank.UserRankTmpRepository;
+import com.poc.ilovegithub.core.repository.rank.*;
 import com.poc.ilovegithub.core.service.MainLanguageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +43,7 @@ public class MainLanguageStepConfig {
     private final OrgRankResultRepository orgRankResultRepository;
 
     private final JdbcTemplateRepository jdbcTemplateRepository;
+
 
 
     @JobScope
@@ -165,4 +163,8 @@ public class MainLanguageStepConfig {
     public ItemWriter<OrgRankResult> orgRankMainLanguageWriter() {
         return items -> items.forEach(item -> orgRankResultRepository.save(item));
     }
+
+
+
+
 }

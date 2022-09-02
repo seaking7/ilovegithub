@@ -27,7 +27,7 @@ public class MailTemplateRepository {
 
         log.info("insert korean user target insert:{}", update);
 
-        int update_sender = jdbcTemplate.update("update g_mail_sender  set status = 'SEND' order by id limit 300");
+        int update_sender = jdbcTemplate.update("update g_mail_sender  set status = 'SEND' order by id limit 100");
         log.info("change status to SEND update:{}", update_sender);
     }
 

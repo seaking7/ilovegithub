@@ -2,6 +2,7 @@ package com.poc.ilovegithub.core.config;
 
 import com.poc.ilovegithub.core.repository.JdbcTemplateRepository;
 import com.poc.ilovegithub.core.repository.MailTemplateRepository;
+import com.poc.ilovegithub.core.repository.rank.RankTemplateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,11 @@ public class WebConfig {
     @Bean
     public MailTemplateRepository getMailTemplateRepository(){
         return new MailTemplateRepository(dataSource);
+    }
+
+    @Bean
+    public RankTemplateRepository getRankTemplateRepository(){
+        return new RankTemplateRepository(dataSource);
     }
 
 }

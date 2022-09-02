@@ -1,9 +1,6 @@
 package com.poc.ilovegithub.core.service;
 
-import com.poc.ilovegithub.core.domain.rank.OrgRankResult;
-import com.poc.ilovegithub.core.domain.rank.OrgRankTmp;
-import com.poc.ilovegithub.core.domain.rank.UserRankResult;
-import com.poc.ilovegithub.core.domain.rank.UserRankTmp;
+import com.poc.ilovegithub.core.domain.rank.*;
 import com.poc.ilovegithub.core.repository.GitRepoRepository;
 import com.poc.ilovegithub.core.repository.JdbcTemplateRepository;
 import com.poc.ilovegithub.core.repository.rank.UserRankResultRepository;
@@ -49,6 +46,18 @@ public class MainLanguageService {
 
 //        returnOrgRank.setMainLanguage(String.join(",", mainLanguageByLogin));
         return returnOrgRank;
+    }
+
+    public MemberRankResult memberRankResultMaker(MemberRankTmp memberRankTmp) {
+        MemberRankResult returnMemberRank = MemberRankResult.from(memberRankTmp);
+        String login = returnMemberRank.getLogin();
+
+        List<String> mainLanguageByLogin = jdbcTemplateRepository.findMainLanguageByLogin(login);
+        if(mainLanguageByLogin.size() > 0) returnMemberRank.setFirstLanguage(mainLanguageByLogin.get(0));
+        if(mainLanguageByLogin.size() > 1) returnMemberRank.setSecondLanguage(mainLanguageByLogin.get(1));
+        if(mainLanguageByLogin.size() > 2) returnMemberRank.setThirdLanguage(mainLanguageByLogin.get(2));
+
+        return returnMemberRank;
     }
 
 }

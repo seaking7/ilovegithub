@@ -108,6 +108,8 @@ public class MailSendJobConfig {
     @StepScope
     @Bean
     public ItemWriter<MailResult> mailSendWriter() {
-        return items -> items.forEach(mailResultRepository::save);
+        return items -> {
+            items.forEach(entity -> mailResultRepository.save(entity));
+        };
     }
 }

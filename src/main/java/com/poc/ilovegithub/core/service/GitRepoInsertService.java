@@ -31,7 +31,7 @@ public class GitRepoInsertService {
     public final static int MAX_REPO_PAGE = 100;
     GitRepoRepository gitRepoRepository;
 
-    public UserDetail gitRepoInsert(UserDetail userDetail, String type) throws InterruptedException {
+    public UserDetail gitRepoInsert(UserDetail userDetail, String parameterType) throws InterruptedException {
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -47,7 +47,7 @@ public class GitRepoInsertService {
         {
             UriComponentsBuilder uriBuilder = UriComponentsBuilder
                     .fromUriString("https://api.github.com")
-                    .path("/"+type)   // users, orgs
+                    .path("/"+parameterType)   // users, orgs
                     .path("/")
                     .path(userDetail.getLogin())
                     .path("/repos")
