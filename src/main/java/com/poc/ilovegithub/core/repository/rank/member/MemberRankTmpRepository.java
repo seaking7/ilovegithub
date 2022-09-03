@@ -1,4 +1,4 @@
-package com.poc.ilovegithub.core.repository.rank;
+package com.poc.ilovegithub.core.repository.rank.member;
 
 import com.poc.ilovegithub.core.domain.rank.MemberRankTmp;
 import org.springframework.data.domain.Page;

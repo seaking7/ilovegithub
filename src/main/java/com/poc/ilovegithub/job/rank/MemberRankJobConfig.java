@@ -3,10 +3,12 @@ package com.poc.ilovegithub.job.rank;
 import com.poc.ilovegithub.core.domain.UserDetail;
 import com.poc.ilovegithub.core.domain.UserStatus;
 import com.poc.ilovegithub.core.domain.rank.*;
-import com.poc.ilovegithub.core.repository.rank.MemberRankResultRepository;
-import com.poc.ilovegithub.core.repository.rank.MemberRankTmpRepository;
+import com.poc.ilovegithub.core.repository.rank.member.MemberRankResultRepository;
+import com.poc.ilovegithub.core.repository.rank.member.MemberRankTmpRepository;
 import com.poc.ilovegithub.core.repository.rank.MemberRepository;
 import com.poc.ilovegithub.core.repository.rank.RankTemplateRepository;
+import com.poc.ilovegithub.core.repository.rank.search.SearchRankResultRepository;
+import com.poc.ilovegithub.core.repository.rank.search.SearchRankTmpRepository;
 import com.poc.ilovegithub.core.service.MainLanguageService;
 import com.poc.ilovegithub.core.service.MemberRankService;
 import lombok.RequiredArgsConstructor;
@@ -43,16 +45,20 @@ public class MemberRankJobConfig {
     private final RankTemplateRepository rankTemplateRepository;
     private final MemberRankTmpRepository memberRankTmpRepository;
     private final MemberRankResultRepository memberRankResultRepository;
+    private final SearchRankTmpRepository searchRankTmpRepository;
+    private final SearchRankResultRepository searchRankResultRepository;
     private final MemberRankService memberRankService;
     private final MainLanguageService mainLanguageService;
 
     @Bean("MemberRankJob")
-    public Job mailSendJob(Step memberRepoInsertStep,
-                           Step memberRankUpdateStep) {
+    public Job memberRankJob(Step memberRepoInsertStep,
+                             Step memberRankUpdateStep,
+                             Step searchRankUpdateStep) {
         return jobBuilderFactory.get("MemberRankJob")
                 .incrementer(new RunIdIncrementer())
                 .start(memberRepoInsertStep)
                 .next(memberRankUpdateStep)
+                .next(searchRankUpdateStep)
                 .build();
     }
 
@@ -177,5 +183,63 @@ public class MemberRankJobConfig {
         return items -> items.forEach(item -> memberRankResultRepository.save(item));
     }
 
+
+
+    @JobScope
+    @Bean("searchRankUpdateStep")
+    public Step searchRankUpdateStep(ItemReader searchRankUpdateReader,
+                                           ItemProcessor searchRankUpdateProcessor,
+                                           ItemWriter searchRankUpdateWriter) {
+        return stepBuilderFactory.get("searchRankUpdateStep")
+                .listener(searchRankUpdateStepListener())
+                .<UserDetail, UserDetail>chunk(Integer.parseInt(env.getProperty("my.fetch-count")))
+                .reader(searchRankUpdateReader)
+                .processor(searchRankUpdateProcessor)
+                .writer(searchRankUpdateWriter)
+                .build();
+    }
+
+    public StepExecutionListener searchRankUpdateStepListener(){
+        return new StepExecutionListener() {
+            @Override
+            public void beforeStep(StepExecution stepExecution) {
+                log.info("===searchRankUpdateStep START, insertSearchRankTmp start");
+                rankTemplateRepository.insertSearchRankTmp();
+
+            }
+
+            @Override
+            public ExitStatus afterStep(StepExecution stepExecution) {
+                rankTemplateRepository.updateSearchRank();
+                log.info("---after step searchRankUpdateStep END");
+                return null;
+            }
+        };
+    }
+
+    @StepScope
+    @Bean
+    public RepositoryItemReader<SearchRankTmp> searchRankUpdateReader() {
+        return new RepositoryItemReaderBuilder<SearchRankTmp>()
+                .name("searchRankUpdateReader")
+                .repository(searchRankTmpRepository)
+                .methodName("findBy")
+                .pageSize(Integer.parseInt(env.getProperty("my.fetch-count")))
+                .arguments(Arrays.asList())
+                .sorts(Collections.singletonMap("id", Sort.Direction.ASC))
+                .build();
+    }
+
+    @StepScope
+    @Bean
+    public ItemProcessor<SearchRankTmp, SearchRankResult> searchRankUpdateProcessor() {
+        return item -> mainLanguageService.searchRankResultMaker(item);
+    }
+
+    @StepScope
+    @Bean
+    public ItemWriter<SearchRankResult> searchRankUpdateWriter() {
+        return items -> items.forEach(item -> searchRankResultRepository.save(item));
+    }
 
 }

@@ -44,4 +44,39 @@ public class RankTemplateRepository {
     }
 
 
+    public void insertSearchRankTmp(){
+        jdbcTemplate.execute("truncate table g_search_count");
+        jdbcTemplate.execute("truncate table g_search_rank_tmp");
+        jdbcTemplate.execute("truncate table g_search_rank_result");
+
+        int insert_to_search_count = jdbcTemplate.update("insert into g_search_count(login, search_count, created_at)\n" +
+                "select c.login, sum(c.cnt) sum, now() from (\n" +
+                "select b.login, count(*) cnt from g_search_result a, g_user b\n" +
+                "where a.search_id != 0 and a.search_id = b.id group by b.login\n" +
+                "union all\n" +
+                "select a.search_login, count(*) cnt from g_search_result a\n" +
+                "where a.search_login is not null group by a.search_login) c\n" +
+                "group by c.login order by sum desc");
+
+
+        int insert_to_rank_tmp = jdbcTemplate.update("insert into g_search_rank_tmp(id, login, type, followers, following, search_count, size, stargazers_count, created_at, updated_at)\n" +
+                "select a.id, a.login, a.type, a.followers, a.following, b.search_count,\n" +
+                "       sum(gr.size) size, sum(gr.stargazers_count) stargazers_count, a.created_at, a.updated_at\n" +
+                "from g_user a, g_search_count b,  g_repository gr\n" +
+                "where b.login = a.login and b.login = gr.login \n" +
+                "group by a.id, a.login, a.type, a.followers, a.following,  b.search_count, a.created_at, a.updated_at");
+
+
+        log.info("insert searchRank tmp result : search_count:{} rank_tmp:{}", insert_to_search_count,  insert_to_rank_tmp);
+    }
+
+    // g_search_rank_result 에 최종 결과 취합되면, 기존 데이터 지우고 다시 넣어줌
+    @Transactional
+    public void updateSearchRank(){
+        int delete_from_g_search_rank = jdbcTemplate.update("delete from g_search_rank");
+        int insert = jdbcTemplate.update("insert into g_search_rank (id, login, type, followers, following, search_count, size, stargazers_count, first_language, second_language, third_language, created_at, updated_at)\n" +
+                "select id, login, type, followers, following, search_count, size, stargazers_count, first_language, second_language, third_language, created_at, updated_at from g_search_rank_result ");
+        log.info("update searchRank result : delete:{}, insert:{}", delete_from_g_search_rank, insert);
+    }
+
 }
